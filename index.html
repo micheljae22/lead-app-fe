@@ -33,6 +33,7 @@
           class="icon-btn"
           onclick="openHistoryModal()"
           title="View Contact History"
+          aria-label="Open contact history"
         >
           📜
         </button>
@@ -41,6 +42,7 @@
           id="themeBtn"
           onclick="toggleTheme()"
           title="Toggle theme"
+          aria-label="Toggle theme"
         >
           🌙
         </button>
@@ -85,7 +87,7 @@
               placeholder="e.g.  cafes in Colombo  ·  plumbers in Melbourne  ·  gyms in New York"
               autocomplete="off"
             />
-            <button class="run-btn" id="runBtn" onclick="runOutreach()">
+            <button class="run-btn" id="runBtn" onclick="runOutreach()" aria-label="Run Outreach">
               <span class="btn-icon" id="btnIcon">▶</span>
               <span id="btnLabel">Run Outreach</span>
             </button>
@@ -599,7 +601,7 @@ Best,
     <!-- /content -->
 
     <!-- Modal -->
-    <div class="modal-overlay" id="modal">
+    <div class="modal-overlay" id="modal" role="dialog" aria-modal="true">
       <div class="modal-box">
         <div class="modal-head">
           <div class="mh-inner">
@@ -646,7 +648,7 @@ Best,
     
 
     <!-- History Modal -->
-    <div class="modal-overlay" id="historyModal" style="z-index: 999">
+    <div class="modal-overlay" id="historyModal" style="z-index: 999" role="dialog" aria-modal="true">
       <div
         class="modal-box"
         style="

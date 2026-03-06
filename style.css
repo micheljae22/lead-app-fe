@@ -91,6 +91,12 @@
           color 0.3s;
       }
 
+      /* Focus visible for accessibility */
+      :focus-visible {
+        outline: 2px solid var(--p1);
+        outline-offset: 2px;
+      }
+
       /* ─── Topbar ─────────────────────────────────────────────────────────── */
       .topbar {
         position: sticky;
