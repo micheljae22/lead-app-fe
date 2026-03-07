@@ -446,6 +446,7 @@
 
       const hModal = document.getElementById("historyModal");
       const historySearch = document.getElementById("historySearch");
+      const historyDedup = document.getElementById("historyDedup");
 
       hModal.addEventListener("click", (e) => {
         if (e.target === hModal) closeHistoryModal();
@@ -466,7 +467,7 @@
 
       function renderHistoryRows(rows) {
         const q = String(historySearch?.value || "").trim().toLowerCase();
-        const filtered = q
+        const base = q
           ? rows.filter((r) => {
               const hay = [
                 r.business_name,
@@ -479,6 +480,24 @@
               return hay.includes(q);
             })
           : rows;
+
+        const deduped = (() => {
+          if (!(historyDedup?.checked ?? false)) return base;
+          const m = new Map();
+          // rows are already ordered DESC by timestamp on the backend, so first seen wins
+          for (const r of base) {
+            const key = [
+              String(r.business_name || "").trim().toLowerCase(),
+              String(r.domain || "").trim().toLowerCase(),
+              String(r.contact_method || "").trim().toLowerCase(),
+              String(r.contact_value || "").trim().toLowerCase(),
+            ].join("|");
+            if (!m.has(key)) m.set(key, r);
+          }
+          return Array.from(m.values());
+        })();
+
+        const filtered = deduped;
 
         if (!filtered.length) {
           document.getElementById("hBody").innerHTML =
@@ -499,7 +518,15 @@
               <div style="font-size: 0.7rem; color: var(--text-3); margin-top: 4px; font-family: monospace;">${esc(r.contact_value)}</div>
             </td>
             <td style="padding: 12px 16px; font-size: 0.75rem; color: var(--text-2); white-space: nowrap;">
-              ${new Date(r.timestamp + "Z").toLocaleString()}
+              ${(() => {
+                const raw = r.timestamp;
+                if (!raw) return "—";
+                const d1 = new Date(raw);
+                if (!Number.isNaN(d1.getTime())) return d1.toLocaleString();
+                const d2 = new Date(String(raw) + "Z");
+                if (!Number.isNaN(d2.getTime())) return d2.toLocaleString();
+                return "—";
+              })()}
             </td>
             <td style="padding: 12px 16px; text-align: right;">
               <button onclick="deleteHistory(${r.id})" style="background: none; border: none; color: var(--red); opacity: 0.7; font-size: 1rem; cursor: pointer;" title="Remove from list (will contact again)">🗑️</button>
@@ -511,6 +538,10 @@
       }
 
       historySearch?.addEventListener("input", () => {
+        renderHistoryRows(historyRows);
+      });
+
+      historyDedup?.addEventListener("change", () => {
         renderHistoryRows(historyRows);
       });
 

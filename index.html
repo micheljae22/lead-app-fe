@@ -6,7 +6,7 @@
     <title>RankRadar — Lead Outreach Platform</title>
     <meta
       name="description"
-      content="Find local businesses on Google Maps and Yellow Pages, extract contact emails, and send personalised outreach — automatically."
+      content="Find local businesses, generate outreach messages, and stream campaign progress in real time."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,17 +14,35 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <!-- <link rel=\'stylesheet\' href=\'style.css\'> -->
-     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style-2.css" />
   </head>
   <body>
-    <!-- Topbar -->
+    <script>
+      (function () {
+        if (location.protocol !== "file:") return;
+        document.body.innerHTML = `
+          <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;font-family:Inter,system-ui,sans-serif;background:#0b1020;color:#e5e7eb;">
+            <div style="max-width:760px;width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:22px;">
+              <div style="font-size:1.1rem;font-weight:800;letter-spacing:-.02em;">Open RankRadar over HTTP</div>
+              <div style="margin-top:8px;line-height:1.6;color:rgba(229,231,235,.86);">
+                This dashboard uses <code style="background:rgba(255,255,255,.08);padding:2px 6px;border-radius:8px;">ES module</code> scripts.
+                Browsers block module loading from <code style="background:rgba(255,255,255,.08);padding:2px 6px;border-radius:8px;">file://</code> URLs.
+              </div>
+              <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+                <a href="http://localhost:3000/" style="display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:#5b6ef5;color:white;text-decoration:none;font-weight:800;">Open Dashboard (http://localhost:3000/)</a>
+                <div style="opacity:.75;font-size:.85rem;">(Make sure backend is running)</div>
+              </div>
+            </div>
+          </div>
+        `;
+      })();
+    </script>
     <header class="topbar">
-      <a href="#" class="brand">
+      <a href="#" class="brand" aria-label="RankRadar">
         <div class="brand-logo">📡</div>
-        <div class="brand-text">
+        <div>
           <div class="brand-name">RankRadar</div>
-          <div class="brand-sub">Outreach Platform</div>
+          <div class="brand-sub">Lead Outreach Platform</div>
         </div>
       </a>
       <div class="nav-right">
@@ -49,85 +67,76 @@
       </div>
     </header>
 
-    <!-- Hero -->
     <div class="hero">
       <div class="hero-inner">
         <div class="hero-eyebrow">
           <div class="hero-dot"></div>
-          Lead Generation & Outreach
+          Lead Generation &amp; Outreach
         </div>
-        <h1 class="hero-title">
+        <div class="hero-title">
           Find leads. <span>Send emails.</span><br />Close clients.
-        </h1>
-        <p class="hero-desc">
+        </div>
+        <div class="hero-desc">
           Upload a list or run a target query to start messaging. Your contacts
           will receive omni-channel automated outreach without any duplicates.
-        </p>
+        </div>
       </div>
     </div>
 
-    <!-- Content -->
-    <div class="content">
-      <!-- Search Query Card -->
-      <div class="card">
-        <div class="card-head">
-          <div class="card-title-row">
-            <div class="card-icon">🔍</div>
-            <div>
-              <div class="card-title">Search Query</div>
-              <div class="card-sub">Enter a business type and location</div>
-            </div>
-          </div>
+    <main class="dashboard">
+      <section class="panel" aria-label="Campaign form">
+        <div class="panel-head">
+          <div class="panel-title">Campaign Setup</div>
+          <div class="panel-sub">All fields and IDs remain compatible with your backend + script.</div>
         </div>
-        <div class="card-body">
-          <div class="search-group">
-            <input
-              id="queryInput"
-              type="text"
-              placeholder="e.g.  cafes in Colombo  ·  plumbers in Melbourne  ·  gyms in New York"
-              autocomplete="off"
-            />
-            <button class="run-btn" id="runBtn" onclick="runOutreach()" aria-label="Run Outreach">
-              <span class="btn-icon" id="btnIcon">▶</span>
-              <span id="btnLabel">Run Outreach</span>
-            </button>
-          </div>
-          <div id="statusArea">
-            <div class="spin-ring"></div>
-            <div>
-              <div id="statusTxt">Launching scrapers…</div>
-              <div id="statusSub">
-                Extracting contacts and sending outreach — this might take a few
-                minutes.
+        <div class="panel-body">
+          <div class="form-grid">
+            <div class="field">
+              <label class="label" for="queryInput">Search query</label>
+              <input
+                id="queryInput"
+                class="tf"
+                type="text"
+                placeholder="e.g. cafes in colombo"
+                autocomplete="off"
+              />
+              <div class="helper">Tip: include a business type + location for better targeting.</div>
+            </div>
+
+            <div class="actions">
+              <button class="run-btn" id="runBtn" onclick="runOutreach()" aria-label="Run Outreach">
+                <span class="btn-icon" id="btnIcon">▶</span>
+                <span id="btnLabel">Run Outreach</span>
+              </button>
+              <label class="mini" title="When enabled, the backend will attempt to send emails (only if EMAIL_MODE=smtp). Otherwise drafts are generated only.">
+                <input id="sendEmails" type="checkbox" />
+                Auto-send emails
+              </label>
+              <label class="mini" title="Auto-scroll results while streaming">
+                <input id="autoScroll" type="checkbox" checked />
+                Auto-scroll
+              </label>
+            </div>
+
+            <div class="status-banner" id="statusArea">
+              <div class="spin-ring"></div>
+              <div>
+                <div id="statusTxt">Launching…</div>
+                <div id="statusSub">Waiting for backend stream.</div>
               </div>
             </div>
-          </div>
-          <div id="errorBox"></div>
-        </div>
-      </div>
+            <div id="errorBox" role="status" aria-live="polite"></div>
 
-      <!-- Email Template Card -->
-      <div class="card">
-        <div class="card-head">
-          <div class="card-title-row">
-            <div class="card-icon">✉️</div>
-            <div>
-              <div class="card-title">Email Template</div>
-              <div class="card-sub">Write once, personalised per business</div>
-            </div>
-          </div>
-          <span class="mode-tag mt-template" id="modeTag">Template Mode</span>
-        </div>
-        <div class="card-body">
-          <div class="ph-bar">
-            <span class="ph-tag">{businessName}</span>
-            <span class="ph-tag">{website}</span>
-            <span class="ph-tag">{query}</span>
-          </div>
-          <textarea
-            id="emailTemplate"
-            oninput="updateModeTag()"
-            placeholder="Hi {businessName},
+            <div class="field">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                <label class="label" for="emailTemplate">Email template</label>
+                <span class="mode-tag mt-template" id="modeTag">Template Mode</span>
+              </div>
+              <textarea
+                id="emailTemplate"
+                oninput="updateModeTag()"
+                placeholder="Hi {businessName},\n\nI found your website ({website}) while searching for '{query}'. ..."
+              >Hi {businessName},
 
 I came across your website and noticed some opportunities to help you acquire more customers online.
 
@@ -138,448 +147,152 @@ Interested? Just reply to this email and we'll set something up.
 Best,
 [Your Name]
 
-— To opt out, reply 'unsubscribe'."
-          ></textarea>
-          <p class="tmpl-note">
-            Leave the template empty to use Groq AI generation instead.
-            Placeholders are swapped per business.
-          </p>
-        </div>
-      </div>
+— To opt out, reply 'unsubscribe'.</textarea>
+              <div class="helper">
+                Leave empty to use the default message generator. Supports: <code>{businessName}</code>, <code>{website}</code>, <code>{query}</code>
+              </div>
+            </div>
 
-      <!-- SMS Template -->
-      <div class="card" style="margin-top: 24px">
-        <div class="card-head">
-          <div class="card-title-row">
-            <div class="card-icon">📱</div>
-            <div>
-              <div class="card-title">SMS Fallback Template</div>
-              <div class="card-sub">
-                Sent if no email is found, but a phone number exists
+            <div class="field">
+              <label class="label" for="smsTemplate">SMS fallback template</label>
+              <textarea
+                id="smsTemplate"
+                placeholder="Hi {businessName}, ..."
+                style="
+                  width: 100%;
+                  min-height: 100px;
+                  background: var(--bg);
+                  border: 1.5px solid var(--border);
+                  border-radius: 12px;
+                  padding: 16px;
+                  font-size: 0.9rem;
+                  line-height: 1.6;
+                  font-family: inherit;
+                  color: var(--text);
+                  resize: vertical;
+                  outline: none;
+                  transition: all 0.2s;
+                "
+                onfocus="
+                  this.style.borderColor = 'var(--p1)';
+                  this.style.boxShadow = '0 0 0 4px var(--ring)';
+                "
+                onblur="
+                  this.style.borderColor = '';
+                  this.style.boxShadow = '';
+                "
+              ></textarea>
+              <div class="helper">Used only when the backend reports no email for a lead.</div>
+            </div>
+
+            <div class="panel" style="border-radius:16px; box-shadow:none;">
+              <div class="panel-head" style="border-bottom:1px solid var(--border);">
+                <div class="panel-title">Sender Settings</div>
+                <div class="panel-sub">Kept for payload compatibility (backend can ignore these).</div>
+              </div>
+              <div class="panel-body">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                  <div class="field">
+                    <label class="label" for="senderName">Your name</label>
+                    <input id="senderName" class="tf" type="text" placeholder="e.g. John Smith" />
+                  </div>
+                  <div class="field">
+                    <label class="label" for="gmailUser">Gmail address</label>
+                    <input id="gmailUser" class="tf" type="email" placeholder="you@gmail.com" />
+                  </div>
+                  <div class="field">
+                    <label class="label" for="gmailPass">Gmail app password</label>
+                    <input id="gmailPass" class="tf" type="password" placeholder="16-character app password" />
+                  </div>
+                  <div class="field">
+                    <label class="label" for="subjectTemplate">Email subject</label>
+                    <input
+                      id="subjectTemplate"
+                      class="tf"
+                      type="text"
+                      placeholder="Quick tip for {businessName}"
+                    />
+                  </div>
+                </div>
+
+                <div style="margin-top:12px; display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                  <div class="field">
+                    <label class="label" for="voiplineToken">VoIPLine token (optional)</label>
+                    <input id="voiplineToken" class="tf" type="password" placeholder="VoIPLine API Token" />
+                  </div>
+                  <div class="field">
+                    <label class="label" for="voiplineCallerId">Caller ID (optional)</label>
+                    <input id="voiplineCallerId" class="tf" type="text" placeholder="e.g. 61400000000" />
+                  </div>
+                </div>
+
+                <div class="helper" style="margin-top:10px;">
+                  For production: prefer configuring SMTP on the backend via environment variables.
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="card-body">
-          <div class="ph-bar">
-            <span class="ph-tag">{businessName}</span>
-            <span class="ph-tag">{website}</span>
-            <span class="ph-tag">{query}</span>
-          </div>
-          <textarea
-            id="smsTemplate"
-            placeholder="Hi {businessName}, came across your business for '{query}'. I help local businesses rank higher and get more clients. Reply YES for a free 15-min audit! - John"
-            style="
-              width: 100%;
-              min-height: 100px;
-              background: var(--bg);
-              border: 1.5px solid var(--border);
-              border-radius: 12px;
-              padding: 16px;
-              font-size: 0.9rem;
-              line-height: 1.6;
-              font-family: inherit;
-              color: var(--text);
-              resize: vertical;
-              outline: none;
-              transition: all 0.2s;
-            "
-            onfocus="
-              this.style.borderColor = 'var(--p1)';
-              this.style.boxShadow = '0 0 0 4px var(--ring)';
-            "
-            onblur="
-              this.style.borderColor = '';
-              this.style.boxShadow = '';
-            "
-          ></textarea>
-        </div>
-      </div>
+      </section>
 
-      <!-- Sender Settings -->
-      <div class="card">
-        <div class="card-head">
-          <div class="card-title-row">
-            <div class="card-icon">⚙️</div>
-            <div>
-              <div class="card-title">Sender Settings</div>
-              <div class="card-sub">
-                Your Gmail credentials and email subject line
-              </div>
-            </div>
+      <section class="panel" aria-label="Live outreach results">
+        <div class="panel-head">
+          <div class="panel-title">Live Results</div>
+          <div class="panel-sub">
+            Results stream in from <code>POST /api/run-outreach</code> as NDJSON.
           </div>
-        </div>
-        <div class="card-body">
-          <div
-            style="
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 12px;
-              margin-bottom: 12px;
-            "
-          >
-            <div>
-              <label
-                style="
-                  display: block;
-                  font-size: 0.7rem;
-                  font-weight: 700;
-                  text-transform: uppercase;
-                  letter-spacing: 0.08em;
-                  color: var(--text-3);
-                  margin-bottom: 6px;
-                "
-                >Your Name</label
-              >
-              <input
-                id="senderName"
-                type="text"
-                placeholder="e.g. John Smith"
-                style="
-                  width: 100%;
-                  background: var(--bg);
-                  border: 1.5px solid var(--border);
-                  border-radius: 10px;
-                  padding: 10px 14px;
-                  font-size: 0.88rem;
-                  font-weight: 500;
-                  font-family: inherit;
-                  color: var(--text);
-                  outline: none;
-                  transition: all 0.2s;
-                "
-                onfocus="
-                  this.style.borderColor = 'var(--p1)';
-                  this.style.boxShadow = '0 0 0 4px var(--ring)';
-                "
-                onblur="
-                  this.style.borderColor = '';
-                  this.style.boxShadow = '';
-                "
-              />
+
+          <div class="summary-grid" aria-label="Campaign summary">
+            <div class="metric">
+              <div class="metric-k">Total</div>
+              <div class="metric-v total" id="stTotal">0</div>
             </div>
-            <div>
-              <label
-                style="
-                  display: block;
-                  font-size: 0.7rem;
-                  font-weight: 700;
-                  text-transform: uppercase;
-                  letter-spacing: 0.08em;
-                  color: var(--text-3);
-                  margin-bottom: 6px;
-                "
-                >Gmail Address</label
-              >
-              <input
-                id="gmailUser"
-                type="email"
-                placeholder="yourname@gmail.com"
-                style="
-                  width: 100%;
-                  background: var(--bg);
-                  border: 1.5px solid var(--border);
-                  border-radius: 10px;
-                  padding: 10px 14px;
-                  font-size: 0.88rem;
-                  font-weight: 500;
-                  font-family: inherit;
-                  color: var(--text);
-                  outline: none;
-                  transition: all 0.2s;
-                "
-                onfocus="
-                  this.style.borderColor = 'var(--p1)';
-                  this.style.boxShadow = '0 0 0 4px var(--ring)';
-                "
-                onblur="
-                  this.style.borderColor = '';
-                  this.style.boxShadow = '';
-                "
-              />
+            <div class="metric">
+              <div class="metric-k">Sent</div>
+              <div class="metric-v sent" id="stSent">0</div>
             </div>
-            <div>
-              <label
-                style="
-                  display: block;
-                  font-size: 0.7rem;
-                  font-weight: 700;
-                  text-transform: uppercase;
-                  letter-spacing: 0.08em;
-                  color: var(--text-3);
-                  margin-bottom: 6px;
-                "
-                >Gmail App Password</label
-              >
-              <input
-                id="gmailPass"
-                type="password"
-                placeholder="16-character app password"
-                style="
-                  width: 100%;
-                  background: var(--bg);
-                  border: 1.5px solid var(--border);
-                  border-radius: 10px;
-                  padding: 10px 14px;
-                  font-size: 0.88rem;
-                  font-weight: 500;
-                  font-family: &quot;JetBrains Mono&quot;, monospace;
-                  color: var(--text);
-                  outline: none;
-                  transition: all 0.2s;
-                "
-                onfocus="
-                  this.style.borderColor = 'var(--p1)';
-                  this.style.boxShadow = '0 0 0 4px var(--ring)';
-                "
-                onblur="
-                  this.style.borderColor = '';
-                  this.style.boxShadow = '';
-                "
-              />
+            <div class="metric">
+              <div class="metric-k">Skipped</div>
+              <div class="metric-v skipped" id="stSkip">0</div>
             </div>
-            <div>
-              <label
-                style="
-                  display: block;
-                  font-size: 0.7rem;
-                  font-weight: 700;
-                  text-transform: uppercase;
-                  letter-spacing: 0.08em;
-                  color: var(--text-3);
-                  margin-bottom: 6px;
-                "
-                >Email Subject
-                <span style="color: var(--p1); font-size: 0.65rem"
-                  >{businessName} auto-filled</span
-                ></label
-              >
-              <input
-                id="subjectTemplate"
-                type="text"
-                placeholder="e.g. Quick tip for {businessName} — boost your Google ranking"
-                style="
-                  width: 100%;
-                  background: var(--bg);
-                  border: 1.5px solid var(--border);
-                  border-radius: 10px;
-                  padding: 10px 14px;
-                  font-size: 0.88rem;
-                  font-weight: 500;
-                  font-family: inherit;
-                  color: var(--text);
-                  outline: none;
-                  transition: all 0.2s;
-                "
-                onfocus="
-                  this.style.borderColor = 'var(--p1)';
-                  this.style.boxShadow = '0 0 0 4px var(--ring)';
-                "
-                onblur="
-                  this.style.borderColor = '';
-                  this.style.boxShadow = '';
-                "
-              />
+            <div class="metric">
+              <div class="metric-k">Failed</div>
+              <div class="metric-v failed" id="stFail">0</div>
             </div>
           </div>
 
-          <!-- VoIPLine Settings -->
-          <hr
-            style="
-              border: 0;
-              border-top: 1px solid var(--border);
-              margin: 20px 0;
-            "
-          />
-          <label
-            style="
-              display: block;
-              font-size: 0.75rem;
-              font-weight: 700;
-              color: var(--text);
-              margin-bottom: 12px;
-              letter-spacing: 0.05em;
-            "
-            >VOIPLINE SMS SETTINGS (Optional)</label
-          >
-          <div
-            style="
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 12px;
-              margin-bottom: 12px;
-            "
-          >
-            <div>
-              <label
-                style="
-                  display: block;
-                  font-size: 0.7rem;
-                  font-weight: 700;
-                  text-transform: uppercase;
-                  letter-spacing: 0.08em;
-                  color: var(--text-3);
-                  margin-bottom: 6px;
-                "
-                >API Token</label
-              >
-              <input
-                id="voiplineToken"
-                type="password"
-                placeholder="VoIPLine API Token"
-                class="tf"
-              />
+          <div class="summary-grid" style="grid-template-columns:repeat(2,1fr); margin-top:12px;">
+            <div class="metric">
+              <div class="metric-k">Processed</div>
+              <div class="metric-v" id="prProcessed">0</div>
             </div>
-            <div>
-              <label
-                style="
-                  display: block;
-                  font-size: 0.7rem;
-                  font-weight: 700;
-                  text-transform: uppercase;
-                  letter-spacing: 0.08em;
-                  color: var(--text-3);
-                  margin-bottom: 6px;
-                "
-                >Caller ID (From Number)</label
-              >
-              <input
-                id="voiplineCallerId"
-                type="text"
-                placeholder="e.g. 61400000000"
-                class="tf"
-              />
-            </div>
-          </div>
-          <p style="font-size: 0.72rem; color: var(--text-3)">
-            Leave Gmail fields empty to use the credentials set in your
-            <code
-              style="
-                background: var(--bg);
-                padding: 1px 6px;
-                border-radius: 4px;
-                font-family: &quot;JetBrains Mono&quot;, monospace;
-              "
-              >.env</code
-            >
-            file. Use
-            <code
-              style="
-                background: var(--bg);
-                padding: 1px 6px;
-                border-radius: 4px;
-                font-family: &quot;JetBrains Mono&quot;, monospace;
-              "
-              >{businessName}</code
-            >
-            in the subject to auto-fill each business name.
-          </p>
-        </div>
-      </div>
-
-      <!-- How it works -->
-      <div class="steps" id="howCard">
-        <div class="step-box">
-          <div class="step-num">1</div>
-          <div class="step-name">Multi-Source Scrape</div>
-          <div class="step-desc">
-            Searches Google Maps and Yellow Pages simultaneously and
-            deduplicates results.
-          </div>
-        </div>
-        <div class="step-box">
-          <div class="step-num">2</div>
-          <div class="step-name">Aggressive Email Find</div>
-          <div class="step-desc">
-            Checks 9 pages, decodes obfuscated emails, guesses domain patterns
-            as a last resort.
-          </div>
-        </div>
-        <div class="step-box">
-          <div class="step-num">3</div>
-          <div class="step-name">Email Composition</div>
-          <div class="step-desc">
-            Uses your template or AI to write a targeted, personalised message
-            for each business.
-          </div>
-        </div>
-        <div class="step-box">
-          <div class="step-num">4</div>
-          <div class="step-name">Auto Send & Log</div>
-          <div class="step-desc">
-            Sends via Gmail SMTP. Every email is logged — click "View Email" to
-            read what was sent.
-          </div>
-        </div>
-      </div>
-
-      <!-- Results -->
-      <div id="resultsSection" style="display: none">
-        <div class="stats-grid" style="margin-bottom: 16px">
-          <div class="stat-card">
-            <div class="stat-icon si-total">🏢</div>
-            <div class="stat-info">
-              <div class="stat-val sv-total" id="stTotal">0</div>
-              <div class="stat-lbl">Businesses Found</div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon si-sent">✅</div>
-            <div class="stat-info">
-              <div class="stat-val sv-sent" id="stSent">0</div>
-              <div class="stat-lbl">Emails Sent</div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon si-noemail">📭</div>
-            <div class="stat-info">
-              <div class="stat-val sv-noemail" id="stSkip">0</div>
-              <div class="stat-lbl">No Email Found</div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon si-failed">❌</div>
-            <div class="stat-info">
-              <div class="stat-val sv-failed" id="stFail">0</div>
-              <div class="stat-lbl">Failed</div>
+            <div class="metric">
+              <div class="metric-k">Expected</div>
+              <div class="metric-v" id="prTotal">0</div>
             </div>
           </div>
         </div>
 
-        <div class="tbl-wrap">
-          <div class="table-actions">
+        <div id="resultsSection" style="display: block">
+          <div class="table-toolbar">
             <div class="filter-bar">
-              <button
-                class="ftab active"
-                data-filter="all"
-                onclick="setFilter('all')"
-              >
+              <button class="ftab active" data-filter="all" onclick="setFilter('all')">
                 All <span class="fcount" id="fcAll">0</span>
               </button>
-              <button
-                class="ftab"
-                data-filter="sent"
-                onclick="setFilter('sent')"
-              >
+              <button class="ftab" data-filter="sent" onclick="setFilter('sent')">
                 Sent <span class="fcount" id="fcSent">0</span>
               </button>
-              <button
-                class="ftab"
-                data-filter="noemail"
-                onclick="setFilter('noemail')"
-              >
+              <button class="ftab" data-filter="noemail" onclick="setFilter('noemail')">
                 No Email <span class="fcount" id="fcSkip">0</span>
               </button>
-              <button
-                class="ftab"
-                data-filter="failed"
-                onclick="setFilter('failed')"
-              >
+              <button class="ftab" data-filter="failed" onclick="setFilter('failed')">
                 Failed <span class="fcount" id="fcFail">0</span>
               </button>
             </div>
+            <div class="mini" id="liveHint">Waiting for first run.</div>
           </div>
-          <div class="tbl-scroll">
+
+          <div class="tbl-scroll" id="tblScroll">
             <table>
               <thead>
                 <tr>
@@ -587,20 +300,23 @@ Best,
                   <th>Business</th>
                   <th>Source</th>
                   <th>Website</th>
-                  <th>Email Found</th>
+                  <th>Email</th>
+                  <th>Phone / Social</th>
                   <th>Status</th>
-                  <th>Generated Email</th>
+                  <th>Draft</th>
                 </tr>
               </thead>
               <tbody id="tBody"></tbody>
             </table>
           </div>
         </div>
-      </div>
-    </div>
-    <!-- /content -->
 
-    <!-- Modal -->
+        <div class="panel-body" id="howCard" style="display:none;">
+          <div class="helper">Run a campaign to see results stream in.</div>
+        </div>
+      </section>
+    </main>
+
     <div class="modal-overlay" id="modal" role="dialog" aria-modal="true">
       <div class="modal-box">
         <div class="modal-head">
@@ -609,7 +325,7 @@ Best,
             <div class="mh-url" id="mUrl">—</div>
             <div class="mh-chips" id="mChips"></div>
           </div>
-          <button class="close-btn" onclick="closeModal()">✕</button>
+          <button class="close-btn" onclick="closeModal()" aria-label="Close modal">✕</button>
         </div>
         <div class="modal-body">
           <div class="mfields">
@@ -626,131 +342,53 @@ Best,
               <div class="mf-val" id="mAddr">—</div>
             </div>
             <div class="mfield" style="grid-column: 1/-1">
-              <div class="mf-label">Phone & Socials</div>
-              <div
-                class="mf-val"
-                id="mExtras"
-                style="font-size: 0.8rem; font-family: monospace"
-              >
-                —
-              </div>
+              <div class="mf-label">Phone &amp; Socials</div>
+              <div class="mf-val" id="mExtras">—</div>
             </div>
           </div>
           <div class="email-section-lbl">Email Body</div>
           <div class="email-preview" id="mBody">—</div>
-          <button class="copy-btn" id="copyBtn" onclick="copyEmail()">
-            📋 Copy Email Body
-          </button>
+          <button class="copy-btn" id="copyBtn" onclick="copyEmail()">📋 Copy Email Body</button>
         </div>
       </div>
     </div>
 
-    
-
-    <!-- History Modal -->
     <div class="modal-overlay" id="historyModal" style="z-index: 999" role="dialog" aria-modal="true">
-      <div
-        class="modal-box"
-        style="
-          max-width: 700px;
-          max-height: 80vh;
-          display: flex;
-          flex-direction: column;
-        "
-      >
+      <div class="modal-box" style="max-width: 860px; max-height: 85vh; display: flex; flex-direction: column;">
         <div class="modal-head">
           <div class="mh-inner">
-            <div
-              class="mh-biz"
-              style="font-size: 1.1rem; letter-spacing: -0.02em"
-            >
-              Contact History
+            <div class="mh-biz">Contact History</div>
+            <div class="mh-url">Previously contacted businesses are skipped to prevent duplicates.</div>
+            <div style="margin-top:10px;">
+              <input id="historySearch" class="tf" type="text" placeholder="Search history..." style="padding:10px 12px; border-radius:12px;" />
             </div>
-            <div class="mh-url" style="margin-top: 2px">
-              Businesses contacted previously are automatically skipped to
-              prevent double-messaging.
+            <div style="margin-top:10px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+              <label class="mini" title="Show only the most recent entry per business/contact in this table view.">
+                <input id="historyDedup" type="checkbox" checked />
+                Hide duplicates
+              </label>
             </div>
           </div>
-          <button class="close-btn" onclick="closeHistoryModal()">✕</button>
+          <button class="close-btn" onclick="closeHistoryModal()" aria-label="Close history">✕</button>
         </div>
-        <div
-          class="modal-body"
-          style="
-            padding: 0;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-          "
-        >
-          <div
-            class="tbl-wrap"
-            style="
-              box-shadow: none;
-              border: none;
-              border-radius: 0;
-              display: flex;
-              flex-direction: column;
-              overflow: hidden;
-            "
-          >
-            <div class="tbl-scroll" style="max-height: 50vh; overflow-y: auto">
-              <table
-                style="width: 100%; text-align: left; border-collapse: collapse"
-              >
-                <thead
-                  style="
-                    position: sticky;
-                    top: 0;
-                    background: var(--surface);
-                    z-index: 10;
-                  "
-                >
-                  <tr style="border-bottom: 1px solid var(--border)">
-                    <th
-                      style="
-                        padding: 12px 16px;
-                        font-size: 0.7rem;
-                        color: var(--text-3);
-                        text-transform: uppercase;
-                      "
-                    >
-                      Business
-                    </th>
-                    <th
-                      style="
-                        padding: 12px 16px;
-                        font-size: 0.7rem;
-                        color: var(--text-3);
-                        text-transform: uppercase;
-                      "
-                    >
-                      Method
-                    </th>
-                    <th
-                      style="
-                        padding: 12px 16px;
-                        font-size: 0.7rem;
-                        color: var(--text-3);
-                        text-transform: uppercase;
-                      "
-                    >
-                      Date
-                    </th>
-                    <th style="padding: 12px 16px; font-size: 0.7rem"></th>
-                  </tr>
-                </thead>
-                <tbody id="hBody"></tbody>
-              </table>
-            </div>
+        <div class="modal-body" style="padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+          <div class="tbl-scroll" style="max-height: 60vh;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Business</th>
+                  <th>Method</th>
+                  <th>Date</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="hBody"></tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
 
-    
-  
-    <!-- <script src=\'script.js\'></script>
-      -->
-    <script src="script.js"></script>
+    <script type="module" src="main.js"></script>
   </body>
 </html>
