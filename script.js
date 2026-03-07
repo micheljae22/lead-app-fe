@@ -23,10 +23,16 @@
       const tBody = document.getElementById("tBody");
       const howCard = document.getElementById("howCard");
       const modal = document.getElementById("modal");
+      const tblScroll = document.getElementById("tblScroll");
+      const autoScrollToggle = document.getElementById("autoScroll");
+      const liveHint = document.getElementById("liveHint");
+      const prProcessed = document.getElementById("prProcessed");
+      const prTotal = document.getElementById("prTotal");
 
       qInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter") runOutreach();
       });
+
       modal.addEventListener("click", (e) => {
         if (e.target === modal) closeModal();
       });
@@ -37,6 +43,7 @@
       /* ── State ─────────────────────────────────────────────────────────────── */
       let allResults = [];
       let activeFilter = "all";
+      let historyRows = [];
 
       /* ── Util ──────────────────────────────────────────────────────────────── */
       const esc = (s) =>
@@ -95,6 +102,7 @@
         let sent = 0,
           noEmail = 0,
           failed = 0;
+
         results.forEach((r) => {
           if (r.emailStatus === "sent") sent++;
           else if (
@@ -105,6 +113,7 @@
             noEmail++;
           else failed++;
         });
+
         document.getElementById("stTotal").textContent = results.length;
         document.getElementById("stSent").textContent = sent;
         document.getElementById("stSkip").textContent = noEmail;
@@ -120,6 +129,14 @@
             b.classList.toggle("active", b.dataset.filter === "all"),
           );
         renderTable();
+
+        if (
+          (autoScrollToggle?.checked ?? false) &&
+          (tblScroll || document.querySelector(".tbl-scroll"))
+        ) {
+          const sc = tblScroll || document.querySelector(".tbl-scroll");
+          sc.scrollTop = sc.scrollHeight;
+        }
       }
 
       function renderTable() {
@@ -143,7 +160,7 @@
         });
 
         if (!rows.length) {
-          tBody.innerHTML = `<tr><td colspan="7"><div class="empty-row"><div class="empty-icon">🔍</div><div class="empty-msg">${allResults.length ? "No entries in this category." : "No results yet. Run a search above."}</div></div></td></tr>`;
+          tBody.innerHTML = `<tr><td colspan="8"><div class="empty-row"><div class="empty-icon">🔍</div><div class="empty-msg">${allResults.length ? "No entries in this category." : "No results yet. Run a search above."}</div></div></td></tr>`;
           return;
         }
 
@@ -160,13 +177,16 @@
             ? `<a class="site-link" href="${esc(r.url)}" target="_blank" rel="noopener" title="${esc(r.url)}">${esc(r.url.replace(/^https?:\/\//, "").replace(/\/$/, ""))}</a>`
             : `<span style="color:var(--text-3)">—</span>`;
 
-          let contactHtml = `<span style="color:var(--text-3)">—</span>`;
+          let emailHtml = `<span style="color:var(--text-3)">—</span>`;
           if (r.email) {
-            contactHtml = r.emailGuessed
+            emailHtml = r.emailGuessed
               ? `<span class="email-v e-guess" title="Guessed from domain">~ ${esc(r.email)}</span>`
               : `<span class="email-v e-found">${esc(r.email)}</span>`;
-          } else if (r.phone) {
-            contactHtml = `<span class="email-v" style="color:var(--amber)">📞 ${esc(r.phone)}</span>`;
+          }
+
+          let phoneHtml = `<span style="color:var(--text-3)">—</span>`;
+          if (r.phone) {
+            phoneHtml = `<span class="email-v" style="color:var(--amber)">📞 ${esc(r.phone)}</span>`;
           } else if (r.socials && r.socials.length > 0) {
             const fb = r.socials.find((s) => s.url.includes("facebook.com"));
             const ig = r.socials.find((s) => s.url.includes("instagram.com"));
@@ -175,12 +195,12 @@
               const handle = ig.url
                 .split("instagram.com/")[1]
                 ?.replace(/\//g, "");
-              contactHtml = `<a class="site-link" href="https://ig.me/m/${handle}" target="_blank">💬 Direct Message</a>`;
+              phoneHtml = `<a class="site-link" href="https://ig.me/m/${handle}" target="_blank">💬 Direct Message</a>`;
             } else if (fb) {
               const handle = fb.url.split("facebook.com/")[1]?.split("/")[0];
-              contactHtml = `<a class="site-link" href="https://m.me/${handle}" target="_blank">💬 Direct Message</a>`;
+              phoneHtml = `<a class="site-link" href="https://m.me/${handle}" target="_blank">💬 Direct Message</a>`;
             } else {
-              contactHtml = `<a class="site-link" href="${esc(r.socials[0].url)}" target="_blank">💬 Social Profile</a>`;
+              phoneHtml = `<a class="site-link" href="${esc(r.socials[0].url)}" target="_blank">💬 Social Profile</a>`;
             }
           }
 
@@ -201,7 +221,8 @@
         </td>
         <td>${src}</td>
         <td>${site}</td>
-        <td>${contactHtml}</td>
+        <td>${emailHtml}</td>
+        <td>${phoneHtml}</td>
         <td>${chipFor(r.emailStatus)}</td>
         <td>${vbtn}</td>
       </tr>`;
@@ -257,6 +278,7 @@
       async function runOutreach() {
         const qInput = document.getElementById("queryInput");
         const query = qInput.value.trim();
+
         const emailTemplate = document
           .getElementById("emailTemplate")
           .value.trim();
@@ -269,6 +291,7 @@
 
         if (!query) {
           qInput.focus();
+          showErr("Please enter a search query (e.g. cafes in colombo).");
           qInput.style.borderColor = "var(--red)";
           qInput.style.boxShadow = "0 0 0 4px rgba(239,68,68,.18)";
           setTimeout(() => {
@@ -278,12 +301,18 @@
           return;
         }
 
-        runBtn.style.display = "none";
+        runBtn.disabled = true;
+        btnLabel.textContent = "Running...";
+        btnIcon.textContent = "⏳";
+        if (liveHint) liveHint.textContent = "Run in progress...";
+        if (prProcessed) prProcessed.textContent = "0";
+        if (prTotal) prTotal.textContent = "0";
 
         hideErr();
         statusArea.classList.add("show");
         if (resultsSec) resultsSec.style.display = "none";
         if (howCard) howCard.style.display = "none";
+
         document.getElementById("statusTxt").textContent =
           "Searching via Google, Yelp, and Yellow Pages…";
         document.getElementById("statusSub").textContent =
@@ -315,6 +344,9 @@
               document.getElementById("voiplineCallerId")?.value.trim() || "",
           };
 
+          const sendEmailsToggle = document.getElementById("sendEmails");
+          const sendEmails = sendEmailsToggle ? !!sendEmailsToggle.checked : true;
+
           let res;
           try {
             res = await fetch("http://localhost:3000/api/run-outreach", {
@@ -324,6 +356,7 @@
                 query,
                 emailTemplate,
                 smsTemplate,
+                sendEmails,
                 senderConfig,
                 voiplineConfig,
               }),
@@ -334,7 +367,7 @@
           }
 
           if (!res) {
-            runBtn.style.display = "flex";
+            runBtn.disabled = false;
             statusArea.classList.remove("show");
             return;
           }
@@ -365,6 +398,14 @@
                       "Processing...";
                     document.getElementById("statusSub").textContent =
                       msg.message;
+
+                    const m = String(msg.message || "").match(
+                      /Processing\s+(\d+)\/(\d+)/i,
+                    );
+                    if (m) {
+                      if (prProcessed) prProcessed.textContent = m[1];
+                      if (prTotal) prTotal.textContent = m[2];
+                    }
                   } else if (msg.type === "result") {
                     allResults.push(msg.data);
                     renderResults(allResults);
@@ -375,6 +416,7 @@
                       "Completed";
                     document.getElementById("statusSub").textContent =
                       msg.summary;
+                    if (liveHint) liveHint.textContent = msg.summary || "Completed.";
                   }
                 } catch (e) {
                   console.error("Stream parse error:", line);
@@ -386,13 +428,15 @@
 
           setTimeout(() => {
             statusArea.classList.remove("show");
-            runBtn.style.display = "flex";
+            runBtn.disabled = false;
+            btnLabel.textContent = "Run Outreach";
+            btnIcon.textContent = "▶";
           }, 4500);
         } catch (err) {
           showErr(err.message || "An unexpected error occurred.");
           statusArea.classList.remove("show");
           if (howCard) howCard.style.display = "";
-          runBtn.style.display = "flex";
+          runBtn.disabled = false;
         } finally {
           runBtn.disabled = false;
           btnLabel.textContent = "Run Outreach";
@@ -400,7 +444,8 @@
         }
       }
 
-const hModal = document.getElementById("historyModal");
+      const hModal = document.getElementById("historyModal");
+      const historySearch = document.getElementById("historySearch");
 
       hModal.addEventListener("click", (e) => {
         if (e.target === hModal) closeHistoryModal();
@@ -419,11 +464,63 @@ const hModal = document.getElementById("historyModal");
         await loadHistory();
       }
 
+      function renderHistoryRows(rows) {
+        const q = String(historySearch?.value || "").trim().toLowerCase();
+        const filtered = q
+          ? rows.filter((r) => {
+              const hay = [
+                r.business_name,
+                r.domain,
+                r.contact_value,
+                r.contact_method,
+              ]
+                .map((x) => String(x || "").toLowerCase())
+                .join(" | ");
+              return hay.includes(q);
+            })
+          : rows;
+
+        if (!filtered.length) {
+          document.getElementById("hBody").innerHTML =
+            '<tr><td colspan="4" style="text-align:center; padding: 30px; color: var(--text-3);">No history entries found.</td></tr>';
+          return;
+        }
+
+        document.getElementById("hBody").innerHTML = filtered
+          .map(
+            (r) => `
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 12px 16px; font-weight: 600; font-size: 0.85rem;">
+              ${esc(r.business_name)}
+              ${r.domain ? `<div style="font-size: 0.7rem; color: var(--text-3); font-weight: 500;">${esc(r.domain)}</div>` : ""}
+            </td>
+            <td style="padding: 12px 16px;">
+              <span class="chip ${r.contact_method === "Email" ? "ch-sent" : "ch-warn"}"><span class="cdot"></span>${esc(r.contact_method)}</span>
+              <div style="font-size: 0.7rem; color: var(--text-3); margin-top: 4px; font-family: monospace;">${esc(r.contact_value)}</div>
+            </td>
+            <td style="padding: 12px 16px; font-size: 0.75rem; color: var(--text-2); white-space: nowrap;">
+              ${new Date(r.timestamp + "Z").toLocaleString()}
+            </td>
+            <td style="padding: 12px 16px; text-align: right;">
+              <button onclick="deleteHistory(${r.id})" style="background: none; border: none; color: var(--red); opacity: 0.7; font-size: 1rem; cursor: pointer;" title="Remove from list (will contact again)">🗑️</button>
+            </td>
+          </tr>
+        `,
+          )
+          .join("");
+      }
+
+      historySearch?.addEventListener("input", () => {
+        renderHistoryRows(historyRows);
+      });
+
       async function loadHistory() {
         try {
           const res = await fetch("http://localhost:3000/api/history");
           const data = await res.json();
           const rows = data.history || [];
+
+          historyRows = rows;
 
           if (!rows.length) {
             document.getElementById("hBody").innerHTML =
@@ -431,28 +528,7 @@ const hModal = document.getElementById("historyModal");
             return;
           }
 
-          document.getElementById("hBody").innerHTML = rows
-            .map(
-              (r) => `
-            <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding: 12px 16px; font-weight: 600; font-size: 0.85rem;">
-                ${esc(r.business_name)}
-                ${r.domain ? `<div style="font-size: 0.7rem; color: var(--text-3); font-weight: 500;">${esc(r.domain)}</div>` : ""}
-              </td>
-              <td style="padding: 12px 16px;">
-                <span class="chip ${r.contact_method === "Email" ? "ch-sent" : "ch-warn"}"><span class="cdot"></span>${esc(r.contact_method)}</span>
-                <div style="font-size: 0.7rem; color: var(--text-3); margin-top: 4px; font-family: monospace;">${esc(r.contact_value)}</div>
-              </td>
-              <td style="padding: 12px 16px; font-size: 0.75rem; color: var(--text-2); white-space: nowrap;">
-                ${new Date(r.timestamp + "Z").toLocaleString()}
-              </td>
-              <td style="padding: 12px 16px; text-align: right;">
-                <button onclick="deleteHistory(${r.id})" style="background: none; border: none; color: var(--red); opacity: 0.7; font-size: 1rem; cursor: pointer;" title="Remove from list (will contact again)">🗑️</button>
-              </td>
-            </tr>
-          `,
-            )
-            .join("");
+          renderHistoryRows(rows);
         } catch (e) {
           console.error(e);
           document.getElementById("hBody").innerHTML =
