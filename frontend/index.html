@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RankRadar — Lead Outreach Platform</title>
+    <meta
+      name="description"
+      content="Find local businesses on Google Maps and Yellow Pages, extract contact emails, and send personalised outreach — automatically."
+    />
+
+    <!-- Premium Fonts: Outfit for UI, JetBrains Mono for Code/Data -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="/style.css" />
+    <script>
+      if (!localStorage.getItem("rankradar_tool_token")) {
+        window.location.href = "/login.html";
+      }
+    </script>
+  </head>
+  <body>
+    <!-- Ambient Floating Orbs for Glassmorphism Background -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <!-- Topbar (Glass Header) -->
+    <header class="topbar glass-card top-nav">
+      <a href="#" class="brand">
+        <div class="brand-icon">✧</div>
+        <div class="brand-text">
+          <div class="brand-name">RankRadar</div>
+          <div class="brand-sub">Outreach Engine</div>
+        </div>
+      </a>
+      <div class="nav-right">
+        <a href="/admin" class="pill-nav-btn" style="text-decoration: none; display: flex; align-items: center; gap: 0.5rem; margin-right: 0.5rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg> Admin Console</a>
+        <span class="pill-badge">V2.0</span>
+        <button class="icon-btn tooltip-trigger" onclick="openSettingsModal()" data-tip="Preferences">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
+        <button
+          class="icon-btn tooltip-trigger"
+          onclick="openHistoryModal()"
+          data-tip="View Archives"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+            ></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </button>
+        <button
+          class="icon-btn tooltip-trigger"
+          id="themeBtn"
+          onclick="toggleTheme()"
+          data-tip="Shift Reality"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-inner">
+        <div class="hero-eyebrow">
+          <div class="pulse-dot"></div>
+          Global Scanning Engine Active
+        </div>
+        <h1 class="hero-title">
+          Acquire Targets. <span>Launch Outreach.</span><br />Close Contracts.
+        </h1>
+        <p class="hero-desc">
+          Deploy the RankRadar engine to instantly extract high-value local
+          prospects and automatically deliver sequenced, omni-channel
+          contact—while ruthlessly deduplicating.
+        </p>
+
+        <!-- Dynamic Status Pills -->
+        <div class="hero-chips">
+          <span class="hero-chip"
+            ><span class="chip-dot dot-purple"></span>Maps Integration
+            Online</span
+          >
+          <span class="hero-chip"
+            ><span class="chip-dot dot-blue"></span>Yellow Pages Linked</span
+          >
+          <span class="hero-chip"
+            ><span class="chip-dot dot-amber"></span>Yelp Bypass Ready</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="content bento-grid-wrapper">
+      <!-- Bento Left Column: Controls -->
+      <div class="bento-col-left">
+        <!-- Search Query Card -->
+        <div class="glass-card">
+          <div class="card-head">
+            <div class="card-title-row">
+              <div class="card-icon">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </div>
+              <div>
+                <div class="card-title">Target Vector</div>
+                <div class="card-sub">Define the search footprint</div>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="search-group">
+              <input
+                id="queryInput"
+                type="text"
+                class="premium-input"
+                placeholder="e.g. Roofers in Austin, TX"
+                autocomplete="off"
+              />
+              <button
+                class="btn btn-primary run-btn"
+                id="runBtn"
+                onclick="runOutreach()"
+              >
+                <svg
+                  class="btn-icon"
+                  id="btnIcon"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <span id="btnLabel">Deploy</span>
+              </button>
+              <button
+                class="btn btn-danger stop-btn"
+                id="stopBtn"
+                onclick="stopOutreach()"
+              >
+                <svg
+                  class="btn-icon"
+                  id="stopIcon"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                </svg>
+                <span id="stopLabel">Halt Mission</span>
+              </button>
+            </div>
+
+            <div id="statusArea" class="status-feed">
+              <div class="pulse-indicator"></div>
+              <div>
+                <div id="statusTxt">Connecting to Master Servers...</div>
+                <div id="statusSub">Awaiting network response</div>
+              </div>
+            </div>
+            <div id="errorBox" class="alert-box alert-danger"></div>
+          </div>
+        </div>
+
+        <!-- Configuration Card -->
+        <div class="glass-card mt-card">
+          <div class="card-head">
+            <div class="card-title-row">
+              <div class="card-icon">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <div class="card-title">Payload Configuration</div>
+                <div class="card-sub">Define the outreach vector</div>
+              </div>
+            </div>
+            <button
+              class="icon-btn tooltip-trigger"
+              onclick="toggleConfig()"
+              id="cfgToggle"
+              data-tip="Min/Max Setup"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+            </button>
+          </div>
+          <div class="card-body" id="cfgBody">
+            <div class="cfg-header-split">
+              <label class="premium-label">Message Architecture</label>
+              <span id="modeTag" class="tag tag-success">Template Mode</span>
+            </div>
+            <div class="ph-bar">
+              <span class="ph-tag" title="Target's Name">{{businessName}}</span>
+              <span class="ph-tag" title="Target's City">{{city}}</span>
+            </div>
+            <textarea
+              id="emailTemplate"
+              class="premium-textarea"
+              placeholder="Leave empty to unleash the AI Generator. Else, construct a manual template here using the dynamic placeholders above."
+            ></textarea>
+            <div class="tmpl-note">
+              If templated, AI is only used to extrapolate city names from
+              coordinates.
+            </div>
+          </div>
+        </div>
+
+        <!-- SMS Fallback Template Card -->
+        <div class="glass-card mt-4">
+          <div class="card-head">
+            <div class="card-title-row">
+              <div class="card-icon">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                  <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                </svg>
+              </div>
+              <div>
+                <div class="card-title">SMS Fallback Template</div>
+                <div class="card-sub">
+                  Sent if no email is found but a phone number exists
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="ph-bar">
+              <span class="ph-tag">{businessName}</span>
+              <span class="ph-tag">{website}</span>
+              <span class="ph-tag">{query}</span>
+            </div>
+            <textarea
+              id="smsTemplate"
+              class="premium-textarea"
+              style="min-height: 100px"
+              placeholder="Hi {businessName}, came across your business for '{query}'. I help local businesses rank higher and get more clients. Reply YES for a free 15-min audit! - John"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Sender Settings Card -->
+        <div class="glass-card mt-4">
+          <div class="card-head">
+            <div class="card-title-row">
+              <div class="card-icon">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <div class="card-title">Network Settings</div>
+                <div class="card-sub">
+                  SMTP Authentication and Provider Keys
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="settings-grid">
+              <div>
+                <label class="premium-label-tiny">Sender Name</label>
+                <input
+                  id="senderName"
+                  type="text"
+                  class="premium-input-small"
+                  placeholder="John Smith"
+                />
+              </div>
+              <div>
+                <label class="premium-label-tiny">Gmail Address</label>
+                <input
+                  id="gmailUser"
+                  type="email"
+                  class="premium-input-small"
+                  placeholder="yourname@gmail.com"
+                />
+              </div>
+              <div>
+                <label class="premium-label-tiny">App Password</label>
+                <input
+                  id="gmailPass"
+                  type="password"
+                  class="premium-input-small mono-font"
+                  placeholder="16-character generic app key"
+                />
+              </div>
+              <div>
+                <label class="premium-label-tiny"
+                  >Subject
+                  <span class="pl-highlight">{businessName}</span>
+                  auto-fill</label
+                >
+                <input
+                  id="subjectTemplate"
+                  type="text"
+                  class="premium-input-small"
+                  placeholder="Quick tip for {businessName} — boost your profile"
+                />
+              </div>
+            </div>
+
+            <hr class="glass-hr" />
+
+            <label class="premium-label-tiny pb-2"
+              >VOIPLINE SMS SETTINGS (OPTIONAL)</label
+            >
+            <div class="settings-grid">
+              <div>
+                <label class="premium-label-tiny text-muted">API Token</label>
+                <input
+                  id="voiplineToken"
+                  type="password"
+                  class="premium-input-small"
+                  placeholder="Token Vault"
+                />
+              </div>
+              <div>
+                <label class="premium-label-tiny text-muted">Caller ID</label>
+                <input
+                  id="voiplineCallerId"
+                  type="text"
+                  class="premium-input-small"
+                  placeholder="1800 XXX XXX"
+                />
+              </div>
+            </div>
+
+            <p class="tmpl-note mt-3">
+              Leave Gmail fields empty to proxy through the server's `.env`
+              master credentials.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bento Right Column: Data & Analytics -->
+      <div class="bento-col-right" id="resultsSection">
+        <!-- Live Analytics Grid -->
+        <div class="stats-grid">
+          <div class="glass-stat-card">
+            <div class="stat-icon si-total">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-val sv-total" id="stTotal">0</div>
+              <div class="stat-lbl">Identified</div>
+            </div>
+          </div>
+          <div class="glass-stat-card">
+            <div class="stat-icon si-sent">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-val sv-sent" id="stSent">0</div>
+              <div class="stat-lbl">Dispatched</div>
+            </div>
+          </div>
+          <div class="glass-stat-card">
+            <div class="stat-icon si-noemail">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-val sv-noemail" id="stSkip">0</div>
+              <div class="stat-lbl">Dead Ends</div>
+            </div>
+          </div>
+          <div class="glass-stat-card">
+            <div class="stat-icon si-failed">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polygon
+                  points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"
+                ></polygon>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-val sv-failed" id="stFail">0</div>
+              <div class="stat-lbl">Failures</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Master Data Table -->
+        <div class="glass-card master-table-card">
+          <div class="table-actions">
+            <div class="filter-bar">
+              <button
+                class="pill-nav-btn active"
+                data-filter="all"
+                onclick="setFilter('all')"
+              >
+                Network <span class="fcount" id="fcAll">0</span>
+              </button>
+              <button
+                class="pill-nav-btn"
+                data-filter="sent"
+                onclick="setFilter('sent')"
+              >
+                Outbound <span class="fcount" id="fcSent">0</span>
+              </button>
+              <button
+                class="pill-nav-btn"
+                data-filter="failed"
+                onclick="setFilter('failed')"
+              >
+                Errata <span class="fcount" id="fcFail">0</span>
+              </button>
+            </div>
+            <button
+              class="btn btn-secondary icon-left-btn"
+              onclick="exportCSV()"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Archive
+            </button>
+          </div>
+
+          <div class="tbl-scroll">
+            <table class="premium-table">
+              <thead>
+                <tr>
+                  <th>Target Entity</th>
+                  <th>Location Intel</th>
+                  <th>Extracted Root</th>
+                  <th>Status Flag</th>
+                </tr>
+              </thead>
+              <tbody id="tBody">
+                <tr id="emptyRow">
+                  <td colspan="4">
+                    <div class="glass-empty">
+                      <div class="empty-icon">⌘</div>
+                      <h4>Awaiting Input</h4>
+                      <p>Deploy a query to populate the master table.</p>
+
+                      <div class="card-subtext mt-4 text-left">
+                        <strong>Architecture Sequence:</strong>
+                        <ol
+                          class="mt-2 ml-4 mb-0"
+                          style="color: var(--text-muted); line-height: 1.6"
+                        >
+                          <li>
+                            Init Google Maps & Yellow Pages simultaneously.
+                          </li>
+                          <li>
+                            Deduplicate massive contact lists via hashing.
+                          </li>
+                          <li>
+                            Crawl websites & Instagram profiles for hidden
+                            contact vectors.
+                          </li>
+                          <li>Authenticate emails to eliminate bouncebacks.</li>
+                          <li>Dispatch payloads. (Logs sent to Exec Dash).</li>
+                        </ol>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /content wrapper -->
+
+    <!-- Glass Modal -->
+    <div class="modal-overlay" id="modal">
+      <div class="modal-dialog glass-card">
+        <div class="modal-header">
+          <h3>Contact Archives</h3>
+          <button class="icon-btn" onclick="closeModal()">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body p-0">
+          <div
+            class="table-actions"
+            style="border-bottom: 1px solid var(--border)"
+          >
+            <h4
+              style="
+                font-size: 0.9rem;
+                margin: 0;
+                font-weight: 600;
+                color: var(--text-main);
+              "
+            >
+              Lifetime Deployment Record
+            </h4>
+            <button class="btn btn-primary btn-sm" onclick="exportHistoryCSV()">
+              Export Everything
+            </button>
+          </div>
+          <div class="tbl-scroll" style="max-height: 50vh">
+            <table class="premium-table" id="histTable">
+              <thead>
+                <tr>
+                  <th>Trace Date</th>
+                  <th>Entity</th>
+                  <th>Domain Hit</th>
+                  <th>Channel</th>
+                  <th>Data String</th>
+                  <th>Result</th>
+                </tr>
+              </thead>
+              <tbody id="histBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Settings Modal -->
+    <div class="modal-overlay" id="settingsModal" style="z-index: 999">
+      <div class="modal-box" style="max-width: 600px;">
+        <div class="modal-head">
+          <div class="mh-inner">
+            <div class="mh-biz" style="font-size: 1.1rem;">Profile & Settings</div>
+            <div class="mh-url" style="margin-top:2px;">Manage your default sending credentials and theme.</div>
+          </div>
+          <button class="close-btn" onclick="closeSettingsModal()">✕</button>
+        </div>
+        <div class="modal-body" style="padding: 1.5rem;">
+          <div class="settings-grid" style="grid-template-columns: 1fr;">
+            <label class="premium-label">Global Defaults</label>
+            <div>
+              <label class="premium-label-tiny text-muted">Default Sender Name</label>
+              <input id="defSenderName" type="text" class="premium-input-small" placeholder="John Smith">
+            </div>
+            <div>
+              <label class="premium-label-tiny text-muted">Default Gmail Address</label>
+              <input id="defGmailUser" type="email" class="premium-input-small" placeholder="yourname@gmail.com">
+            </div>
+            <div>
+              <label class="premium-label-tiny text-muted">Default App Password</label>
+              <input id="defGmailPass" type="password" class="premium-input-small mono-font" placeholder="16-character generic app key">
+            </div>
+            <div>
+              <label class="premium-label-tiny text-muted">Default Subject Line</label>
+              <input id="defSubject" type="text" class="premium-input-small" placeholder="Quick tip for {businessName}">
+            </div>
+          </div>
+          <hr class="glass-hr" style="margin: 1.5rem 0;">
+          
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <label class="premium-label" style="margin:0;">Force Dark Theme</label>
+            <label class="admin-switch">
+              <input type="checkbox" id="forceDarkTheme" onchange="toggleThemeFromSettings()">
+              <span class="admin-slider"></span>
+            </label>
+          </div>
+
+          <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+            <button class="btn btn-primary" onclick="saveSettingsModal()">Save Preferences</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- How It Works Reference Card -->
+    <div id="howCard" style="display: none"></div>
+
+    <script src="/script.js"></script>
+  </body>
+</html>

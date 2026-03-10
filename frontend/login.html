@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RankRadar | Join the Crew</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #6366f1;
+        --primary-hover: #4f46e5;
+        --bg-color: #ffffff;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Outfit", sans-serif;
+        display: flex;
+        min-height: 100vh;
+        background: var(--bg-color);
+        color: var(--text-main);
+      }
+
+      /* Left Side - Vibrant Graphic */
+      .split-left {
+        flex: 1;
+        background: linear-gradient(135deg, #4f46e5 0%, #ec4899 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 4rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .split-left::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 60%
+        );
+        animation: pulseBg 15s infinite alternate;
+      }
+
+      @keyframes pulseBg {
+        0% {
+          transform: scale(1) translate(0, 0);
+        }
+        100% {
+          transform: scale(1.1) translate(-2%, -2%);
+        }
+      }
+
+      .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 2;
+      }
+      .hero-desc {
+        font-size: 1.25rem;
+        opacity: 0.9;
+        max-width: 80%;
+        line-height: 1.5;
+        position: relative;
+        z-index: 2;
+      }
+
+      /* Right Side - Clean Form */
+      .split-right {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        background: #ffffff;
+      }
+
+      .auth-container {
+        width: 100%;
+        max-width: 400px;
+      }
+
+      .auth-header {
+        margin-bottom: 2.5rem;
+      }
+      .auth-header h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+      }
+      .auth-header p {
+        color: var(--text-muted);
+        font-size: 1rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+        position: relative;
+      }
+      .form-group label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: #334155;
+      }
+      .form-input {
+        width: 100%;
+        padding: 0.875rem 1.25rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-family: inherit;
+        font-size: 1rem;
+        transition: all 0.2s;
+        background: #f8fafc;
+      }
+      .form-input:focus {
+        border-color: var(--primary);
+        background: #ffffff;
+        outline: none;
+        box-shadow: 0 4px 14px rgba(99, 102, 241, 0.1);
+      }
+
+      .auth-btn {
+        width: 100%;
+        padding: 1rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        margin-top: 1rem;
+      }
+      .auth-btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+      }
+      .auth-btn:active {
+        transform: translateY(0);
+      }
+
+      .switch-mode {
+        text-align: center;
+        margin-top: 2rem;
+        font-size: 0.95rem;
+        color: var(--text-muted);
+      }
+      .switch-mode a {
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .switch-mode a:hover {
+        color: var(--primary-hover);
+        text-decoration: underline;
+      }
+
+      .status-msg {
+        padding: 1rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+        display: none;
+        text-align: center;
+        font-weight: 500;
+      }
+      .status-err {
+        background: #fef2f2;
+        color: #ef4444;
+        border: 1px solid #fca5a5;
+      }
+      .status-ok {
+        background: #ecfdf5;
+        color: #10b981;
+        border: 1px solid #6ee7b7;
+      }
+
+      @media (max-width: 900px) {
+        .split-left {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="split-left">
+      <h1 class="hero-title">Omni-Channel<br />Lead Engine.</h1>
+      <p class="hero-desc">
+        Discover hidden businesses, generate AI-tailored DMs, and automate your
+        entire outreach pipeline from one unified interface.
+      </p>
+    </div>
+
+    <div class="split-right">
+      <div class="auth-container">
+        <div class="auth-header">
+          <h2 id="title">Welcome Back</h2>
+          <p id="desc">Sign in to access the RankRadar workspace.</p>
+        </div>
+
+        <div id="statusBox" class="status-msg"></div>
+
+        <form id="authForm">
+          <div class="form-group">
+            <label>Workspace Email</label>
+            <input
+              type="text"
+              id="username"
+              class="form-input"
+              placeholder="you@company.com"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              id="password"
+              class="form-input"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+          <button type="submit" class="auth-btn" id="submitBtn">Sign In</button>
+        </form>
+
+        <div class="switch-mode">
+          <span id="promptText">New to the team?</span>
+          <a href="#" id="toggleBtn">Request Account</a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      if (localStorage.getItem("rankradar_tool_token")) {
+        window.location.href = "/";
+      }
+
+      let isLogin = true;
+      const form = document.getElementById("authForm");
+      const toggleBtn = document.getElementById("toggleBtn");
+      const title = document.getElementById("title");
+      const desc = document.getElementById("desc");
+      const btn = document.getElementById("submitBtn");
+      const promptText = document.getElementById("promptText");
+      const statusBox = document.getElementById("statusBox");
+
+      toggleBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        isLogin = !isLogin;
+        statusBox.style.display = "none";
+
+        if (isLogin) {
+          title.textContent = "Welcome Back";
+          desc.textContent = "Sign in to access the RankRadar workspace.";
+          btn.textContent = "Sign In";
+          promptText.textContent = "New to the team?";
+          toggleBtn.textContent = "Request Account";
+        } else {
+          title.textContent = "Join the Crew";
+          desc.textContent =
+            "Create an account. Requires Admin approval before use.";
+          btn.textContent = "Request Access";
+          promptText.textContent = "Already approved?";
+          toggleBtn.textContent = "Sign in here";
+        }
+      });
+
+      function showMsg(msg, isErr = true) {
+        statusBox.textContent = msg;
+        statusBox.className = `status-msg ${isErr ? "status-err" : "status-ok"}`;
+        statusBox.style.display = "block";
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        statusBox.style.display = "none";
+        btn.disabled = true;
+        btn.textContent = "Connecting...";
+
+        const user = document.getElementById("username").value;
+        const pass = document.getElementById("password").value;
+        const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
+
+        try {
+          const res = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: user, password: pass }),
+          });
+          const data = await res.json();
+
+          if (!res.ok) throw new Error(data.error || "Server error");
+
+          if (isLogin) {
+            localStorage.setItem("rankradar_tool_token", data.token);
+            window.location.href = "/";
+          } else {
+            showMsg(
+              "Access Requested. Please ask your Admin to approve your account.",
+              false,
+            );
+            setTimeout(() => toggleBtn.click(), 4000);
+          }
+        } catch (err) {
+          showMsg(err.message, true);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = isLogin ? "Sign In" : "Request Access";
+        }
+      });
+    </script>
+  </body>
+</html>

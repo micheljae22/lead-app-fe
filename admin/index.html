@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RankRadar | Command Center</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Top Navigation Bar (Bento Header) -->
+      <header class="bento-card top-nav">
+        <div class="brand">
+          <div class="brand-icon">✧</div>
+          <div class="brand-text">
+            <h1>RankRadar</h1>
+            <span>Admin Command Center</span>
+          </div>
+        </div>
+
+        <nav class="pill-nav">
+          <button class="nav-pill active" data-tab="dashboard">
+            Dashboard
+          </button>
+          <button class="nav-pill" data-tab="logs">Outreach Logs</button>
+          <button class="nav-pill" id="navStaff" data-tab="staff">
+            Team Roster
+          </button>
+        </nav>
+
+        <div class="user-profile">
+          <div class="avatar" id="displayRoleInitials">AD</div>
+          <div class="user-meta">
+            <span class="user-name" id="displayUsername">Loading...</span>
+            <span class="user-role" id="displayRole">Admin</span>
+          </div>
+          <button class="icon-btn" id="logoutBtn" title="Sign Out">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Content Area -->
+      <main class="main-content">
+        <!-- VIEW: DASHBOARD -->
+        <div id="tab-dashboard" class="view-pane active">
+          <div class="bento-grid-master">
+            <!-- BENTO TILE 1: Analytics Chart -->
+            <div class="bento-card tile-chart">
+              <div class="card-header">
+                <h2>Outreach Velocity</h2>
+                <button
+                  class="icon-btn"
+                  id="refreshDashBtn"
+                  title="Refresh Analytics"
+                >
+                  ↻
+                </button>
+              </div>
+              <div class="chart-container">
+                <canvas id="velocityChart"></canvas>
+              </div>
+            </div>
+
+            <!-- BENTO TILE 2: Live Activity Feed -->
+            <div class="bento-card tile-feed">
+              <div class="card-header">
+                <h2>Live Network Feed</h2>
+                <span class="pulse-indicator"></span>
+              </div>
+              <div class="feed-list" id="activityFeed">
+                <div class="feed-item empty-state">
+                  Awaiting network traffic...
+                </div>
+              </div>
+            </div>
+
+            <!-- BENTO TILE 3: Global System Toggle -->
+            <div class="bento-card tile-control">
+              <div class="card-header">
+                <h2>Scraping Engine</h2>
+                <span class="status-badge" id="engineStatusLabel">Online</span>
+              </div>
+              <div class="control-body">
+                <p class="control-desc">
+                  Toggle the global master switch to instantly pause all team
+                  outreach activity.
+                </p>
+
+                <!-- iOS Style Premium Toggle -->
+                <label class="premium-toggle">
+                  <input type="checkbox" id="killSwitchCheckbox" checked />
+                  <div class="toggle-track">
+                    <div class="toggle-thumb"></div>
+                  </div>
+                  <span class="toggle-label" id="killSwitchText"
+                    >Engine Active</span
+                  >
+                </label>
+              </div>
+            </div>
+
+            <!-- BENTO TILE 4: Quick Summary Stats -->
+            <div class="bento-card tile-stats">
+              <div class="card-header">
+                <h2>Lifetime Operations</h2>
+              </div>
+              <div class="stats-grid">
+                <div
+                  class="stat-box"
+                  style="background: #eff6ff; color: #3b82f6"
+                >
+                  <span class="stat-val" id="totalContacts">0</span>
+                  <span class="stat-label">Total Contacts</span>
+                </div>
+                <div
+                  class="stat-box"
+                  style="background: #fdf4ff; color: #d946ef"
+                >
+                  <span class="stat-val" id="totalEmails">0</span>
+                  <span class="stat-label">Emails</span>
+                </div>
+                <div
+                  class="stat-box"
+                  style="background: #ecfdf5; color: #10b981"
+                >
+                  <span class="stat-val" id="totalSms">0</span>
+                  <span class="stat-label">SMS</span>
+                </div>
+                <div
+                  class="stat-box"
+                  style="background: #fffbeb; color: #f59e0b"
+                >
+                  <span class="stat-val" id="totalDms">0</span>
+                  <span class="stat-label">Social DMs</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW: OUTREACH LOGS -->
+        <div id="tab-logs" class="view-pane">
+          <div class="bento-card full-width-card">
+            <div class="card-header">
+              <h2>Master Outreach Database</h2>
+              <div class="header-actions">
+                <div class="search-wrap">
+                  <svg
+                    class="search-icon"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search businesses or domains..."
+                  />
+                </div>
+                <button class="btn btn-primary" id="exportBtn">
+                  Export CSV
+                </button>
+                <button class="btn btn-secondary" id="refreshBtn">
+                  Refresh
+                </button>
+              </div>
+            </div>
+
+            <div class="table-frame">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date & Time</th>
+                    <th>Target Entity</th>
+                    <th>Channel</th>
+                    <th>Contact Detail</th>
+                    <th>Status</th>
+                    <th class="text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="historyBody">
+                  <tr>
+                    <td colspan="6" class="empty-state">
+                      Loading outreach database...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW: TEAM ROSTER -->
+        <div id="tab-staff" class="view-pane">
+          <div class="bento-card full-width-card">
+            <div class="card-header">
+              <h2>Team Access & Roster</h2>
+              <button class="btn btn-secondary" id="refreshStaffBtn">
+                Refresh Team
+              </button>
+            </div>
+
+            <div class="table-frame">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Member Info</th>
+                    <th>Access Level</th>
+                    <th>Network Status</th>
+                    <th>Last Seen</th>
+                    <th class="text-right">Management</th>
+                  </tr>
+                </thead>
+                <tbody id="staffBody">
+                  <tr>
+                    <td colspan="5" class="empty-state">
+                      Fetching team roster...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- MODERN DOSSIER MODAL -->
+    <div class="modal-overlay" id="dossierModal">
+      <div class="modal-dialog bento-card">
+        <div class="modal-header">
+          <h3>Payload Inspection</h3>
+          <button class="icon-btn" id="closeDossier">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="dossier-grid">
+            <div class="d-item">
+              <label>Business Name</label>
+              <div class="d-val" id="dTarget"></div>
+            </div>
+            <div class="d-item">
+              <label>Target Domain</label>
+              <div class="d-val sub" id="dDomain"></div>
+            </div>
+            <div class="d-item">
+              <label>Attack Vector</label>
+              <div class="d-val" id="dVector"></div>
+            </div>
+            <div class="d-item">
+              <label>Contact Route</label>
+              <div class="d-val highlight" id="dContactVal"></div>
+            </div>
+          </div>
+          <div class="payload-box">
+            <label>Generated Payload Transcript</label>
+            <div class="p-text" id="dMessage"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="closeDossierBtn">
+            Close Inspection
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

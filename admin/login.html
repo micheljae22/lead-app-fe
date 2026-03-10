@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RankRadar | Admin Authenticate</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #8b5cf6; /* Vibrant Purple */
+        --primary-hover: #7c3aed;
+        --text-main: #1f2937;
+        --text-muted: #6b7280;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Outfit", sans-serif;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        /* Animated Mesh Gradient Background */
+        background: linear-gradient(-45deg, #fbcfe8, #ede9fe, #e0e7ff, #f3e8ff);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+        overflow: hidden;
+        position: relative;
+      }
+
+      @keyframes gradientBG {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      /* Ambient glowing orbs */
+      .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.6;
+        z-index: 0;
+      }
+      .orb-1 {
+        width: 400px;
+        height: 400px;
+        background: #c084fc;
+        top: -100px;
+        left: -100px;
+        animation: float 10s infinite alternate;
+      }
+      .orb-2 {
+        width: 500px;
+        height: 500px;
+        background: #60a5fa;
+        bottom: -200px;
+        right: -100px;
+        animation: float 12s infinite alternate-reverse;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translate(0, 0);
+        }
+        100% {
+          transform: translate(50px, 50px);
+        }
+      }
+
+      .glass-card {
+        /* Premium Glassmorphism */
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 32px;
+        width: 100%;
+        max-width: 440px;
+        padding: 3.5rem;
+        box-shadow:
+          0 4px 24px -1px rgba(0, 0, 0, 0.05),
+          0 20px 40px -8px rgba(0, 0, 0, 0.1),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+        position: relative;
+        z-index: 10;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+      }
+
+      .icon-wrap {
+        width: 64px;
+        height: 64px;
+        background: white;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem auto;
+        box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2);
+        font-size: 1.8rem;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        background: linear-gradient(135deg, #4c1d95, #9333ea);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.25rem;
+      }
+      .header p {
+        color: var(--text-muted);
+        font-size: 1rem;
+        font-weight: 400;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+      .form-group label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #4b5563;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.02em;
+      }
+
+      .form-input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        color: var(--text-main);
+        font-family: inherit;
+        font-size: 1rem;
+        padding: 1rem 1.25rem;
+        border-radius: 16px;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        outline: none;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+      }
+
+      .form-input:focus {
+        background: #fff;
+        border-color: var(--primary);
+        box-shadow:
+          0 0 0 4px rgba(139, 92, 246, 0.15),
+          inset 0 2px 4px rgba(0, 0, 0, 0.02);
+      }
+
+      .btn {
+        width: 100%;
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        font-family: inherit;
+        font-size: 1.05rem;
+        font-weight: 600;
+        padding: 1.1rem;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 1.5rem;
+        box-shadow: 0 10px 20px rgba(139, 92, 246, 0.25);
+      }
+
+      .btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 15px 25px rgba(139, 92, 246, 0.3);
+      }
+      .btn:active {
+        transform: translateY(0);
+        box-shadow: 0 5px 10px rgba(139, 92, 246, 0.2);
+      }
+
+      .status {
+        font-size: 0.9rem;
+        text-align: center;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        border-radius: 12px;
+        display: none;
+        animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .status-err {
+        background: rgba(254, 226, 226, 0.8);
+        border: 1px solid #fecaca;
+        color: #dc2626;
+        backdrop-filter: blur(10px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="glass-card">
+      <div class="header">
+        <div class="icon-wrap">✧</div>
+        <h1>Admin Portal</h1>
+        <p>Sign in to your Executive Workspace.</p>
+      </div>
+
+      <div id="statusBox" class="status"></div>
+
+      <form id="authForm">
+        <div class="form-group">
+          <label>Admin ID</label>
+          <input
+            type="text"
+            id="username"
+            class="form-input"
+            required
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Enter your username"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Passcode</label>
+          <input
+            type="password"
+            id="password"
+            class="form-input"
+            required
+            placeholder="••••••••"
+          />
+        </div>
+
+        <button type="submit" class="btn" id="submitBtn">Authenticate</button>
+      </form>
+    </div>
+
+    <script>
+      if (localStorage.getItem("rankradar_token")) {
+        window.location.href = "/admin/";
+      }
+
+      const form = document.getElementById("authForm");
+      const btn = document.getElementById("submitBtn");
+      const statusBox = document.getElementById("statusBox");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        statusBox.style.display = "none";
+        btn.disabled = true;
+        btn.textContent = "Verifying...";
+
+        const user = document.getElementById("username").value;
+        const pass = document.getElementById("password").value;
+
+        try {
+          const res = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: user, password: pass }),
+          });
+
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || "Access Denied");
+
+          localStorage.setItem("rankradar_token", data.token);
+          btn.textContent = "Success. Redirecting...";
+
+          setTimeout(() => (window.location.href = "/admin/"), 600);
+        } catch (err) {
+          statusBox.textContent = String(err.message)
+            .replace("Invalid identifying string", "Invalid Admin ID")
+            .replace("Invalid cryptographic passkey", "Invalid Passcode");
+          statusBox.className = "status status-err";
+          statusBox.style.display = "block";
+          btn.disabled = false;
+          btn.textContent = "Authenticate";
+        }
+      });
+    </script>
+  </body>
+</html>
