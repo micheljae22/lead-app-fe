@@ -1,5 +1,7 @@
 import { state } from "./state.js";
 import { esc, safeLocalDate } from "./utils.js";
+import { icons } from "./icons.js";
+import { showToast } from "./toast.js";
 
 function renderHistoryRows(rows) {
   const historySearch = document.getElementById("historySearch");
@@ -34,9 +36,31 @@ function renderHistoryRows(rows) {
     return Array.from(m.values());
   })();
 
+  const totalCount = rows.length;
+  const uniqueCount = (() => {
+    const s = new Set();
+    for (const r of rows) {
+      s.add(String(r.domain || r.business_name || "").trim().toLowerCase());
+    }
+    return s.size;
+  })();
+  const historyTotalCount = document.getElementById("historyTotalCount");
+  const historyUniqueCount = document.getElementById("historyUniqueCount");
+  if (historyTotalCount) historyTotalCount.textContent = String(totalCount);
+  if (historyUniqueCount) historyUniqueCount.textContent = String(uniqueCount);
+
   if (!filtered.length) {
-    hBody.innerHTML =
-      '<tr><td colspan="4" style="text-align:center; padding: 30px; color: var(--text-3);">No history entries found.</td></tr>';
+    hBody.innerHTML = `
+      <tr>
+        <td colspan="4">
+          <div class="empty-row">
+            <div class="empty-icon">${icons.search}</div>
+            <div class="empty-msg">No matching history entries.</div>
+            <div class="empty-sub">Try clearing the search box or disabling “Hide duplicates”.</div>
+          </div>
+        </td>
+      </tr>
+    `;
     return;
   }
 
@@ -56,7 +80,7 @@ function renderHistoryRows(rows) {
             ${safeLocalDate(r.timestamp)}
           </td>
           <td style="padding: 12px 16px; text-align: right;">
-            <button onclick="deleteHistory(${r.id})" style="background: none; border: none; color: var(--red); opacity: 0.7; font-size: 1rem; cursor: pointer;" title="Remove from list (will contact again)">🗑️</button>
+            <button class="hdel" onclick="deleteHistory(${r.id})" title="Remove from list (will contact again)" aria-label="Delete history row">${icons.trash}</button>
           </td>
         </tr>
       `,
@@ -79,8 +103,21 @@ export async function loadHistory() {
     state.historyRows = rows;
 
     if (!rows.length) {
-      document.getElementById("hBody").innerHTML =
-        '<tr><td colspan="4" style="text-align:center; padding: 30px; color: var(--text-3);">No history found. Run outreach first.</td></tr>';
+      const historyTotalCount = document.getElementById("historyTotalCount");
+      const historyUniqueCount = document.getElementById("historyUniqueCount");
+      if (historyTotalCount) historyTotalCount.textContent = "0";
+      if (historyUniqueCount) historyUniqueCount.textContent = "0";
+      document.getElementById("hBody").innerHTML = `
+        <tr>
+          <td colspan="4">
+            <div class="empty-row">
+              <div class="empty-icon">${icons.info}</div>
+              <div class="empty-msg">No contact history yet.</div>
+              <div class="empty-sub">Run a campaign to generate drafts and log outreach.</div>
+            </div>
+          </td>
+        </tr>
+      `;
       return;
     }
 
@@ -114,6 +151,7 @@ export async function deleteHistory(id) {
     await fetch(`http://localhost:3000/api/history/${id}`, {
       method: "DELETE",
     });
+    showToast({ type: "success", title: "Removed", message: "History entry removed" });
     loadHistory();
   } catch (e) {
     alert("Failed to delete history row");

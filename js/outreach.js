@@ -1,10 +1,13 @@
 import { state } from "./state.js";
 import { renderResults } from "./resultsTable.js";
+import { icons } from "./icons.js";
+import { showToast } from "./toast.js";
+import { resetStages, setStageComplete, updateStageFromStatus } from "./stages.js";
 
 function showErr(m) {
   const errorBox = document.getElementById("errorBox");
   if (!errorBox) return;
-  errorBox.textContent = "⚠  " + m;
+  errorBox.textContent = String(m || "");
   errorBox.classList.add("show");
 }
 function hideErr() {
@@ -44,10 +47,12 @@ export async function runOutreach() {
 
   runBtn.disabled = true;
   btnLabel.textContent = "Running...";
-  btnIcon.textContent = "⏳";
+  if (btnIcon) btnIcon.innerHTML = icons.spinner;
   if (liveHint) liveHint.textContent = "Run in progress...";
   if (prProcessed) prProcessed.textContent = "0";
   if (prTotal) prTotal.textContent = "0";
+
+  resetStages();
 
   hideErr();
   statusArea.classList.add("show");
@@ -58,6 +63,8 @@ export async function runOutreach() {
     "Searching via Google, Yelp, and Yellow Pages…";
   document.getElementById("statusSub").textContent =
     "Both sources running in parallel. This takes 2–4 minutes, please wait.";
+
+  updateStageFromStatus("Searching");
 
   try {
     state.allResults = [];
@@ -135,6 +142,8 @@ export async function runOutreach() {
               document.getElementById("statusTxt").textContent = "Processing...";
               document.getElementById("statusSub").textContent = msg.message;
 
+              updateStageFromStatus(msg.message);
+
               const m = String(msg.message || "").match(/Processing\s+(\d+)\/(\d+)/i);
               if (m) {
                 if (prProcessed) prProcessed.textContent = m[1];
@@ -145,10 +154,18 @@ export async function runOutreach() {
               renderResults(state.allResults);
             } else if (msg.type === "error") {
               showErr(msg.message);
+              showToast({ type: "error", title: "Error", message: String(msg.message || "") });
             } else if (msg.type === "done") {
               document.getElementById("statusTxt").textContent = "Completed";
               document.getElementById("statusSub").textContent = msg.summary;
               if (liveHint) liveHint.textContent = msg.summary || "Completed.";
+
+              setStageComplete();
+              showToast({
+                type: "success",
+                title: "Campaign finished",
+                message: "Results are ready. Review drafts in the table.",
+              });
             }
           } catch (e) {
             console.error("Stream parse error:", line);
@@ -162,16 +179,21 @@ export async function runOutreach() {
       statusArea.classList.remove("show");
       runBtn.disabled = false;
       btnLabel.textContent = "Run Outreach";
-      btnIcon.textContent = "▶";
+      if (btnIcon) btnIcon.innerHTML = icons.play;
     }, 4500);
   } catch (err) {
     showErr(err.message || "An unexpected error occurred.");
+    showToast({
+      type: "error",
+      title: "Run failed",
+      message: String(err?.message || "An unexpected error occurred."),
+    });
     statusArea.classList.remove("show");
     if (howCard) howCard.style.display = "";
     runBtn.disabled = false;
   } finally {
     runBtn.disabled = false;
     btnLabel.textContent = "Run Outreach";
-    btnIcon.textContent = "▶";
+    if (btnIcon) btnIcon.innerHTML = icons.play;
   }
 }

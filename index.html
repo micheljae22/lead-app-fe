@@ -39,7 +39,7 @@
     </script>
     <header class="topbar">
       <a href="#" class="brand" aria-label="RankRadar">
-        <div class="brand-logo">📡</div>
+        <div class="brand-logo" id="brandLogo"></div>
         <div>
           <div class="brand-name">RankRadar</div>
           <div class="brand-sub">Lead Outreach Platform</div>
@@ -53,7 +53,7 @@
           title="View Contact History"
           aria-label="Open contact history"
         >
-          📜
+          <span class="icon" id="historyIcon" aria-hidden="true"></span>
         </button>
         <button
           class="icon-btn"
@@ -61,9 +61,7 @@
           onclick="toggleTheme()"
           title="Toggle theme"
           aria-label="Toggle theme"
-        >
-          🌙
-        </button>
+        ></button>
       </div>
     </header>
 
@@ -101,11 +99,25 @@
                 autocomplete="off"
               />
               <div class="helper">Tip: include a business type + location for better targeting.</div>
+              <div class="qs" aria-label="Quick start example queries">
+                <div class="qs-title">Quick start</div>
+                <div class="qs-items">
+                  <button class="qs-pill" type="button" data-q="plumbers in downtown">
+                    plumbers in downtown
+                  </button>
+                  <button class="qs-pill" type="button" data-q="dentists near me">
+                    dentists near me
+                  </button>
+                  <button class="qs-pill" type="button" data-q="gyms in [city]">
+                    gyms in [city]
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div class="actions">
               <button class="run-btn" id="runBtn" onclick="runOutreach()" aria-label="Run Outreach">
-                <span class="btn-icon" id="btnIcon">▶</span>
+                <span class="btn-icon" id="btnIcon" aria-hidden="true"></span>
                 <span id="btnLabel">Run Outreach</span>
               </button>
               <label class="mini" title="When enabled, the backend will attempt to send emails (only if EMAIL_MODE=smtp). Otherwise drafts are generated only.">
@@ -242,6 +254,23 @@ Best,
             Results stream in from <code>POST /api/run-outreach</code> as NDJSON.
           </div>
 
+          <div class="stage-bar stream-steps" id="stageBar" aria-label="Campaign stage">
+            <div class="stage stream-step" data-stage="search">
+              <div class="stage-dot"></div>
+              <div class="stage-label">Search</div>
+            </div>
+            <div class="stage-sep" aria-hidden="true"></div>
+            <div class="stage stream-step" data-stage="processing">
+              <div class="stage-dot"></div>
+              <div class="stage-label">Processing</div>
+            </div>
+            <div class="stage-sep" aria-hidden="true"></div>
+            <div class="stage stream-step" data-stage="complete">
+              <div class="stage-dot"></div>
+              <div class="stage-label">Complete</div>
+            </div>
+          </div>
+
           <div class="summary-grid" aria-label="Campaign summary">
             <div class="metric">
               <div class="metric-k">Total</div>
@@ -348,7 +377,7 @@ Best,
           </div>
           <div class="email-section-lbl">Email Body</div>
           <div class="email-preview" id="mBody">—</div>
-          <button class="copy-btn" id="copyBtn" onclick="copyEmail()">📋 Copy Email Body</button>
+          <button class="copy-btn" id="copyBtn" onclick="copyEmail()">Copy Email Body</button>
         </div>
       </div>
     </div>
@@ -359,6 +388,16 @@ Best,
           <div class="mh-inner">
             <div class="mh-biz">Contact History</div>
             <div class="mh-url">Previously contacted businesses are skipped to prevent duplicates.</div>
+            <div class="h-counters" aria-label="History counters">
+              <div class="hc-pill">
+                <span class="hc-k">Unique businesses</span>
+                <span class="hc-v" id="historyUniqueCount">0</span>
+              </div>
+              <div class="hc-pill">
+                <span class="hc-k">Total records</span>
+                <span class="hc-v" id="historyTotalCount">0</span>
+              </div>
+            </div>
             <div style="margin-top:10px;">
               <input id="historySearch" class="tf" type="text" placeholder="Search history..." style="padding:10px 12px; border-radius:12px;" />
             </div>

@@ -1,5 +1,6 @@
 import { state } from "./state.js";
 import { chipFor, esc } from "./utils.js";
+import { showToast } from "./toast.js";
 
 export function openModal(idx) {
   const r = state.allResults[idx];
@@ -15,8 +16,8 @@ export function openModal(idx) {
   document.getElementById("mAddr").textContent = r.address || "—";
 
   const extras = [];
-  if (r.phone) extras.push(`📞 ${r.phone}`);
-  if (r.socialLink) extras.push(`💬 ${r.socialLink}`);
+  if (r.phone) extras.push(`Phone: ${r.phone}`);
+  if (r.socialLink) extras.push(`Social: ${r.socialLink}`);
   document.getElementById("mExtras").innerHTML = extras.length
     ? extras.map(esc).join(" &nbsp; ")
     : "—";
@@ -26,7 +27,7 @@ export function openModal(idx) {
   document.getElementById("mChips").innerHTML = chipFor(r.emailStatus);
 
   const cb = document.getElementById("copyBtn");
-  cb.textContent = "📋 Copy Email Body";
+  cb.textContent = "Copy Email Body";
   cb.classList.remove("ok");
 
   modal.classList.add("show");
@@ -45,10 +46,11 @@ export function copyEmail() {
     .writeText(document.getElementById("mBody").textContent)
     .then(() => {
       const cb = document.getElementById("copyBtn");
-      cb.textContent = "✓ Copied to clipboard!";
+      cb.textContent = "Copied";
       cb.classList.add("ok");
+      showToast({ type: "success", title: "Copied", message: "Email body copied" });
       setTimeout(() => {
-        cb.textContent = "📋 Copy Email Body";
+        cb.textContent = "Copy Email Body";
         cb.classList.remove("ok");
       }, 2500);
     });

@@ -1,5 +1,6 @@
 import { state } from "./state.js";
 import { chipFor, esc } from "./utils.js";
+import { icons } from "./icons.js";
 
 function renderTable() {
   const tBody = document.getElementById("tBody");
@@ -25,7 +26,7 @@ function renderTable() {
   });
 
   if (!rows.length) {
-    tBody.innerHTML = `<tr><td colspan="8"><div class="empty-row"><div class="empty-icon">🔍</div><div class="empty-msg">${state.allResults.length ? "No entries in this category." : "No results yet. Run a search above."}</div></div></td></tr>`;
+    tBody.innerHTML = `<tr><td colspan="8"><div class="empty-row"><div class="empty-icon">${icons.search}</div><div class="empty-msg">${state.allResults.length ? "No entries in this category." : "No results yet. Run a search above."}</div><div class="empty-sub">Try an example query like <span class="kbd">dentists near me</span>.</div></div></td></tr>`;
     return;
   }
 
@@ -46,14 +47,15 @@ function renderTable() {
 
     let emailHtml = `<span style="color:var(--text-3)">—</span>`;
     if (r.email) {
-      emailHtml = r.emailGuessed
+      const base = r.emailGuessed
         ? `<span class="email-v e-guess" title="Guessed from domain">~ ${esc(r.email)}</span>`
         : `<span class="email-v e-found">${esc(r.email)}</span>`;
+      emailHtml = `<div class="cell-copy">${base}<button class="icopy" type="button" data-copy="${esc(r.email)}" title="Copy email" aria-label="Copy email">${icons.copy}</button></div>`;
     }
 
     let phoneHtml = `<span style="color:var(--text-3)">—</span>`;
     if (r.phone) {
-      phoneHtml = `<span class="email-v" style="color:var(--amber)">📞 ${esc(r.phone)}</span>`;
+      phoneHtml = `<div class="cell-copy"><span class="email-v" style="color:var(--amber)">${esc(r.phone)}</span><button class="icopy" type="button" data-copy="${esc(r.phone)}" title="Copy phone" aria-label="Copy phone">${icons.copy}</button></div>`;
     } else if (r.socials && r.socials.length > 0) {
       const fb = r.socials.find((s) => s.url.includes("facebook.com"));
       const ig = r.socials.find((s) => s.url.includes("instagram.com"));
@@ -62,25 +64,25 @@ function renderTable() {
         const handle = ig.url
           .split("instagram.com/")[1]
           ?.replace(/\//g, "");
-        phoneHtml = `<a class="site-link" href="https://ig.me/m/${handle}" target="_blank">💬 Direct Message</a>`;
+        phoneHtml = `<a class="site-link" href="https://ig.me/m/${handle}" target="_blank">Direct Message</a>`;
       } else if (fb) {
         const handle = fb.url.split("facebook.com/")[1]?.split("/")[0];
-        phoneHtml = `<a class="site-link" href="https://m.me/${handle}" target="_blank">💬 Direct Message</a>`;
+        phoneHtml = `<a class="site-link" href="https://m.me/${handle}" target="_blank">Direct Message</a>`;
       } else {
-        phoneHtml = `<a class="site-link" href="${esc(r.socials[0].url)}" target="_blank">💬 Social Profile</a>`;
+        phoneHtml = `<a class="site-link" href="${esc(r.socials[0].url)}" target="_blank">Social Profile</a>`;
       }
     }
 
     const vbtn = r.generatedEmail
-      ? `<button class="vbtn" onclick="openModal(${gi})">✉ View Draft</button>`
+      ? `<button class="vbtn" onclick="openModal(${gi})">View Draft</button>`
       : `<span style="color:var(--text-3)">—</span>`;
 
     const meta = [];
-    if (r.rating) meta.push("★ " + esc(r.rating));
+    if (r.rating) meta.push("Rating " + esc(r.rating));
     if (r.address) meta.push(esc(r.address));
 
     tBody.innerHTML += `
-      <tr class="drow">
+      <tr class="drow" tabindex="0">
         <td style="color:var(--text-3);font-size:.72rem;font-weight:600">${i + 1}</td>
         <td>
           <div class="biz-name">${esc(r.businessName || "Unknown")}</div>
