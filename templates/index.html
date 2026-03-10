@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RankRadar — Templates</title>
+    <meta name="description" content="Manage reusable outreach templates." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../style-2.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a href="/" class="brand" aria-label="RankRadar">
+        <div class="brand-logo" id="brandLogo"></div>
+        <div>
+          <div class="brand-name">RankRadar</div>
+          <div class="brand-sub">Lead Outreach Platform</div>
+        </div>
+      </a>
+      <nav class="header-nav" aria-label="Main navigation">
+        <a href="/" class="nav-link">Dashboard</a>
+        <a href="/templates/" class="nav-link" aria-current="page">Templates</a>
+        <a href="/history/" class="nav-link">History</a>
+      </nav>
+      <div class="nav-right">
+        <a href="/" class="pill-badge" style="display:inline-flex;align-items:center;gap:8px;">
+          Back to Dashboard
+        </a>
+        <button
+          class="icon-btn"
+          id="themeBtn"
+          title="Toggle theme"
+          aria-label="Toggle theme"
+        ></button>
+      </div>
+    </header>
+
+    <div class="hero">
+      <div class="hero-inner">
+        <div class="hero-eyebrow">
+          <div class="hero-dot"></div>
+          Reusable outreach
+        </div>
+        <div class="hero-title">Templates</div>
+        <div class="hero-desc">
+          Save named templates locally. Click “Use” to load one into the dashboard Email template field.
+        </div>
+      </div>
+    </div>
+
+    <main class="dashboard" style="grid-template-columns: 1fr; padding-bottom: 28px;">
+      <section class="panel">
+          <div class="panel-head" style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div>
+              <div class="panel-title">Saved templates</div>
+              <div class="panel-sub">Stored in <span style="font-family: 'JetBrains Mono', monospace;">localStorage</span> for now.</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <button id="newTemplateBtn" class="run-btn" type="button">New template</button>
+            </div>
+          </div>
+          <div class="panel-body" style="display:grid;grid-template-columns: 420px 1fr;gap:14px;align-items:start;">
+            <div class="panel" style="border-radius: var(--r-lg); box-shadow:none; overflow:hidden;">
+              <div class="panel-head" style="padding: 12px 14px;">
+                <div class="panel-title" style="font-size: .78rem;">Library</div>
+              </div>
+              <div class="panel-body" style="padding: 0;">
+                <div id="tplList" style="display:flex;flex-direction:column;"></div>
+              </div>
+            </div>
+
+            <div class="panel" style="border-radius: var(--r-lg); box-shadow:none; overflow:hidden;">
+              <div class="panel-head" style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap; padding: 12px 14px;">
+                <div>
+                  <div class="panel-title" style="font-size: .78rem;">Editor</div>
+                  <div class="panel-sub">Use variables like <span style="font-family: 'JetBrains Mono', monospace;">{businessName}</span>, <span style="font-family: 'JetBrains Mono', monospace;">{website}</span>.</div>
+                </div>
+                <div style="display:flex;gap:8px;">
+                  <button id="useTemplateBtn" class="vbtn" type="button" disabled>Use on dashboard</button>
+                  <button id="saveTemplateBtn" class="run-btn" type="button" disabled>Save</button>
+                </div>
+              </div>
+              <div class="panel-body" style="padding: 0 14px 0 14px;">
+                <div id="tplError" class="tpl-msg tpl-msg-error" style="display:none;"></div>
+                <div id="tplNote" class="tpl-msg tpl-msg-note" style="display:none;"></div>
+              </div>
+              <div class="panel-body" style="display:grid;gap:10px;">
+                <div>
+                  <div class="qs-title" style="margin-bottom:6px;">NAME</div>
+                  <input id="tplName" class="tf" type="text" placeholder="Dentist audit v1" />
+                </div>
+                <div>
+                  <div class="qs-title" style="margin-bottom:6px;">BODY</div>
+                  <textarea id="tplBody" rows="14" placeholder="Write your outreach template..."></textarea>
+                </div>
+                <div>
+                  <div class="qs-title" style="margin-bottom:6px;">PREVIEW (SAMPLE)</div>
+                  <div id="tplPreview" style="white-space:pre-wrap; line-height: 1.6; font-size:.84rem; color: var(--text-2); padding: 12px 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface);"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+    </main>
+
+    <script type="module" src="../js/templatesPage.js"></script>
+  </body>
+</html>

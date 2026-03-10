@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RankRadar — History</title>
+    <meta name="description" content="Browse and manage contacted leads." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../style-2.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a href="/" class="brand" aria-label="RankRadar">
+        <div class="brand-logo" id="brandLogo"></div>
+        <div>
+          <div class="brand-name">RankRadar</div>
+          <div class="brand-sub">Lead Outreach Platform</div>
+        </div>
+      </a>
+      <nav class="header-nav" aria-label="Main navigation">
+        <a href="/" class="nav-link">Dashboard</a>
+        <a href="/templates/" class="nav-link">Templates</a>
+        <a href="/history/" class="nav-link" aria-current="page">History</a>
+      </nav>
+      <div class="nav-right">
+        <a href="/" class="pill-badge" style="display:inline-flex;align-items:center;gap:8px;">
+          Back to Dashboard
+        </a>
+        <button
+          class="icon-btn"
+          id="themeBtn"
+          title="Toggle theme"
+          aria-label="Toggle theme"
+        ></button>
+      </div>
+    </header>
+
+    <div class="hero">
+      <div class="hero-inner">
+        <div class="hero-eyebrow">
+          <div class="hero-dot"></div>
+          Contact Archive
+        </div>
+        <div class="hero-title">History</div>
+        <div class="hero-desc">
+          Search, dedupe, and unlock leads. Deleting a history entry makes the lead eligible to be contacted again.
+        </div>
+      </div>
+    </div>
+
+    <main class="dashboard" style="grid-template-columns: 1fr; padding-bottom: 28px;">
+      <section class="panel">
+          <div class="panel-head" style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div>
+              <div class="panel-title">All contacts</div>
+              <div class="panel-sub">
+                Total: <span id="historyTotalCount">0</span> 
+                <span style="opacity:.45; padding: 0 6px;">/</span>
+                Unique: <span id="historyUniqueCount">0</span>
+              </div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <input
+                id="historySearch"
+                type="text"
+                placeholder="Search name, domain, email, phone..."
+                class="tf"
+                style="min-width: 260px;"
+              />
+              <label class="mini" style="user-select:none;">
+                <input id="historyDedup" type="checkbox" />
+                Hide duplicates
+              </label>
+              <button id="historyRefresh" class="vbtn" type="button">Refresh</button>
+            </div>
+          </div>
+          <div class="panel-body" style="padding: 0;">
+            <div class="tbl-scroll" style="max-height: calc(100vh - 340px);">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Business</th>
+                    <th>Contact</th>
+                    <th>Timestamp</th>
+                    <th style="text-align:right;">Unlock</th>
+                  </tr>
+                </thead>
+                <tbody id="hBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+    </main>
+
+    <script type="module" src="../js/historyPage.js"></script>
+  </body>
+</html>

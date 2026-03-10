@@ -15,6 +15,23 @@ import {
 applyTheme();
 updateModeTag();
 
+// Apply template chosen from /templates page
+try {
+  const selectedTemplateJson = localStorage.getItem("rr_selected_template");
+  if (selectedTemplateJson) {
+    const t = JSON.parse(selectedTemplateJson);
+    const emailTemplateEl = document.getElementById("emailTemplate");
+    if (emailTemplateEl && typeof t?.body === "string") {
+      emailTemplateEl.value = t.body;
+      updateModeTag();
+      showToast({ type: "success", title: "Template applied", message: `Loaded “${t?.name || "Template"}” into Email template.` });
+    }
+    localStorage.removeItem("rr_selected_template");
+  }
+} catch {
+  localStorage.removeItem("rr_selected_template");
+}
+
 // Icons (monochrome SVG)
 const brandLogo = document.getElementById("brandLogo");
 if (brandLogo) brandLogo.innerHTML = icons.radar;
